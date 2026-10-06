@@ -5,6 +5,10 @@ import { useAuthStore } from "@/stores/authStore"
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api/v1",
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+    "Bypass-Tunnel-Reminder": "true",
+  },
 })
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
