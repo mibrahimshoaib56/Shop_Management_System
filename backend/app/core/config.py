@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 480
     admin_username: str = "admin"
     admin_initial_password: str = ""
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,https://shop-management-system-liard.vercel.app"
 
     @property
     def cors_origin_list(self) -> list[str]:
