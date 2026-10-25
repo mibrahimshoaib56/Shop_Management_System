@@ -6,7 +6,10 @@ import { Layout } from "@/components/Layout"
 import { ProtectedRoute } from "@/components/ProtectedRoute"
 import { queryClient } from "@/lib/queryClient"
 import { CategoriesPage } from "@/pages/CategoriesPage"
+import { CustomerCatalogPage } from "@/pages/CustomerCatalogPage"
+import { CustomersPage } from "@/pages/CustomersPage"
 import { DashboardPage } from "@/pages/DashboardPage"
+import { LandingPage } from "@/pages/LandingPage"
 import { LoginPage } from "@/pages/LoginPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
 import { PosPage } from "@/pages/PosPage"
@@ -22,10 +25,18 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* 3-Portal Welcome / Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+
+          {/* Customer Storefront & Public Invoices */}
+          <Route path="/catalog" element={<CustomerCatalogPage />} />
+
+          {/* Authentication */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Staff Backoffice (Protected) */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/pos" element={<PosPage />} />
               <Route path="/products" element={<ProductsPage />} />
@@ -33,6 +44,7 @@ export default function App() {
               <Route path="/suppliers" element={<SuppliersPage />} />
               <Route path="/purchases" element={<PurchasesPage />} />
               <Route path="/sales" element={<SalesPage />} />
+              <Route path="/customers" element={<CustomersPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/settings/users" element={<UsersPage />} />
             </Route>

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import {
   AlertTriangle,
+  BookOpen,
   Boxes,
   Coins,
   Package,
@@ -24,9 +25,10 @@ import {
   YAxis,
 } from "recharts"
 
-import type { CategoryRevenue, DashboardStats, TopProduct, TrendPoint } from "@/types/api"
+import type { CategoryRevenue, DashboardStats, KhataSummary, TopProduct, TrendPoint } from "@/types/api"
 
 import { ErrorPanel } from "@/components/ErrorPanel"
+import { RoleGate } from "@/components/RoleGate"
 import { Spinner } from "@/components/Spinner"
 import { StatCard } from "@/components/StatCard"
 import { api } from "@/lib/api"
@@ -62,6 +64,11 @@ export function DashboardPage() {
     queryFn: async () => (await api.get<CategoryRevenue[]>("/analytics/category-revenue")).data,
   })
 
+  const khataQuery = useQuery({
+    queryKey: ["customers-summary"],
+    queryFn: async () => (await api.get<KhataSummary>("/customers/summary")).data,
+  })
+
   if (statsQuery.isLoading) return <Spinner label="Loading dashboard…" />
   if (statsQuery.isError || !statsQuery.data) {
     return <ErrorPanel onRetry={() => statsQuery.refetch()} />
@@ -69,14 +76,21 @@ export function DashboardPage() {
   const stats = statsQuery.data
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <RoleGate>
+      <div className="space-y-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <StatCard label="Today's Sales" value={money(stats.today_sales)} icon={Receipt} />
         <StatCard
           label="Today's Net Profit"
           value={money(stats.today_profit)}
           icon={TrendingUp}
           tone={stats.today_profit >= 0 ? "success" : "warning"}
+        />
+        <StatCard
+          label="Outstanding Udhaar"
+          value={money(khataQuery.data?.total_outstanding ?? 0)}
+          icon={BookOpen}
+          tone={(khataQuery.data?.total_outstanding ?? 0) > 0 ? "warning" : "default"}
         />
         <StatCard label="Items Sold Today" value={String(stats.items_sold_today)} icon={Boxes} />
         <StatCard label="Total Active Products" value={String(stats.total_products)} icon={Package} />
@@ -182,5 +196,6 @@ export function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  </RoleGate>
+)
 }

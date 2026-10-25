@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import {
+  BookOpen,
   FileBarChart,
   LayoutDashboard,
   LogOut,
@@ -9,6 +10,7 @@ import {
   ReceiptText,
   ShoppingCart,
   ShoppingBag,
+  Store,
   Tags,
   Truck,
   Users,
@@ -30,15 +32,17 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: true },
   { to: "/pos", label: "Point of Sale", icon: ShoppingCart },
+  { to: "/sales", label: "Sales History", icon: ReceiptText },
+  { to: "/customers", label: "Customers & Khata", icon: BookOpen },
   { to: "/products", label: "Products", icon: Package },
   { to: "/categories", label: "Categories", icon: Tags },
-  { to: "/suppliers", label: "Suppliers", icon: Truck },
-  { to: "/purchases", label: "Purchases", icon: ShoppingBag },
-  { to: "/sales", label: "Sales", icon: ReceiptText },
-  { to: "/reports", label: "Reports", icon: FileBarChart },
+  { to: "/suppliers", label: "Suppliers", icon: Truck, adminOnly: true },
+  { to: "/purchases", label: "Purchases", icon: ShoppingBag, adminOnly: true },
+  { to: "/reports", label: "Reports", icon: FileBarChart, adminOnly: true },
   { to: "/settings/users", label: "Users", icon: Users, adminOnly: true },
+  { to: "/catalog", label: "Store Catalog", icon: Store },
 ]
 
 export function Layout() {

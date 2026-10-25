@@ -42,6 +42,7 @@ export interface ProductCategoryBrief {
 export interface ProductSupplierBrief {
   id: number
   name: string
+  contact_info?: string | null
 }
 
 export interface Product {
@@ -90,6 +91,7 @@ export interface SaleItem {
   unit_selling_price: number | string
   line_revenue: number | string
   line_profit: number | string
+  returned_quantity?: number
   product_name?: string | null
   product_sku?: string | null
 }
@@ -98,10 +100,28 @@ export interface Sale {
   id: number
   transaction_code: string
   customer_name: string | null
+  customer_id?: number | null
   total_revenue: number | string
   total_cost: number | string
   total_profit: number | string
   sale_date: string
+  payment_method?: string
+  payment_split?: string | null
+  status?: string
+  refund_amount?: number | string
+  refund_reason?: string | null
+  refunded_at?: string | null
+  discount_amount?: number | string
+}
+
+export interface RefundItemPayload {
+  product_id: number
+  quantity: number
+}
+
+export interface RefundPayload {
+  reason: string
+  items?: RefundItemPayload[]
 }
 
 export interface SaleDetail extends Sale {
@@ -149,4 +169,102 @@ export interface CategoryRevenue {
   name: string
   revenue: number
   share_pct: number
+}
+
+export interface PublicProduct {
+  id: number
+  sku_code: string
+  name: string
+  category_id: number
+  category_name?: string | null
+  description?: string | null
+  image_url?: string | null
+  selling_price: number | string
+  current_stock: number
+  is_in_stock: boolean
+}
+
+export interface PublicCategory {
+  id: number
+  name: string
+  description?: string | null
+  product_count: number
+}
+
+export interface PublicSaleItem {
+  id: number
+  product_id: number
+  product_name?: string | null
+  product_sku?: string | null
+  quantity: number
+  unit_selling_price: number | string
+  line_revenue: number | string
+}
+
+export interface PublicSale {
+  id: number
+  transaction_code: string
+  customer_name?: string | null
+  total_revenue: number | string
+  sale_date: string
+  items: PublicSaleItem[]
+}
+
+export interface StockAdjustmentPayload {
+  product_id: number
+  quantity: number
+  reason: string
+  notes?: string | null
+}
+
+export interface StockAdjustment {
+  id: number
+  product_id: number
+  quantity: number
+  reason: string
+  notes: string | null
+  unit_cost: number | string
+  total_loss: number | string
+  adjusted_by: number | null
+  created_at: string
+  product_name?: string | null
+  product_sku?: string | null
+  cashier_username?: string | null
+}
+
+// ─── Phase C: Customers & Khata ───────────────────────────────────────────────
+
+export interface Customer {
+  id: number
+  name: string
+  phone: string | null
+  address: string | null
+  notes: string | null
+  is_active: boolean
+  outstanding_balance: number | string
+  created_at: string
+}
+
+export interface KhataEntry {
+  id: number
+  customer_id: number
+  entry_type: "credit" | "payment"
+  amount: number | string
+  sale_id: number | null
+  notes: string | null
+  recorded_by: number | null
+  created_at: string
+}
+
+export interface KhataLedger {
+  customer: Customer
+  entries: KhataEntry[]
+  total_credit: number | string
+  total_paid: number | string
+  outstanding: number | string
+}
+
+export interface KhataSummary {
+  total_customers: number
+  total_outstanding: number
 }

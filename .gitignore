@@ -1,4 +1,4 @@
-# Python
+# Python (legacy backend — kept for reference only)
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -9,7 +9,10 @@ venv/
 
 # Node
 node_modules/
+dist/
+dist-api/
 frontend/dist/
+frontend/node_modules/
 *.local
 
 # Env & secrets
@@ -27,3 +30,6 @@ Thumbs.db
 backups/
 *.dump
 exports/
+
+# Vercel
+.vercel/

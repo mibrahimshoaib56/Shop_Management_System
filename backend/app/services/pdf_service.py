@@ -43,18 +43,35 @@ def build_receipt_pdf(
     total_revenue: Decimal,
     total_cost: Decimal,
     total_profit: Decimal,
+    show_profit: bool = False,
+    payment_method: str = "Cash",
+    payment_split: str | None = None,
+    status: str = "completed",
+    refund_amount: Decimal = Decimal("0.00"),
+    discount_amount: Decimal = Decimal("0.00"),
 ) -> bytes:
     styles = _styles()
+    pay_label = f"Payment: {payment_method}"
+    if payment_split:
+        pay_label += f" ({payment_split})"
+
+    status_label = ""
+    if status == "refunded":
+        status_label = f" [REFUNDED - Rs. {refund_amount:,.2f}]"
+    elif status == "partially_refunded":
+        status_label = f" [PARTIALLY REFUNDED - Rs. {refund_amount:,.2f}]"
+
     story = [
         Paragraph(SHOP_NAME, styles["shop"]),
         Paragraph(SHOP_ADDRESS, styles["meta"]),
         Paragraph(f"Tel: {SHOP_PHONE}", styles["meta"]),
         Spacer(1, 6 * mm),
-        Paragraph("Sales Receipt", styles["section"]),
+        Paragraph(f"Sales Receipt{status_label}", styles["section"]),
         Paragraph(f"Transaction Code: {transaction_code}", styles["meta"]),
         Paragraph(f"Date: {sale_date}", styles["meta"]),
         Paragraph(f"Customer: {customer_name or 'Walk-in Customer'}", styles["meta"]),
         Paragraph(f"Cashier: {cashier or '-'}", styles["meta"]),
+        Paragraph(pay_label, styles["meta"]),
         Spacer(1, 4 * mm),
     ]
 
@@ -89,12 +106,27 @@ def build_receipt_pdf(
     story.append(table)
     story.append(Spacer(1, 5 * mm))
 
+    if show_profit:
+        totals_rows = []
+        if discount_amount > Decimal("0.00"):
+            totals_rows.append(["Discount Applied (Rs.)", f"-{discount_amount:,.2f}"])
+        totals_rows.extend(
+            [
+                ["Total Revenue (Rs.)", f"{total_revenue:,.2f}"],
+                ["Cost of Goods Sold (Rs.)", f"{total_cost:,.2f}"],
+                ["Net Profit (Rs.)", f"{total_profit:,.2f}"],
+            ]
+        )
+    else:
+        totals_rows = [
+            ["Total Items", str(sum(int(l.get("quantity", 0)) for l in lines))],
+        ]
+        if discount_amount > Decimal("0.00"):
+            totals_rows.append(["Discount Applied (Rs.)", f"-{discount_amount:,.2f}"])
+        totals_rows.append(["Grand Total (Rs.)", f"{total_revenue:,.2f}"])
+
     totals = Table(
-        [
-            ["Total Revenue (Rs.)", f"{total_revenue:,.2f}"],
-            ["Cost of Goods Sold (Rs.)", f"{total_cost:,.2f}"],
-            ["Net Profit (Rs.)", f"{total_profit:,.2f}"],
-        ],
+        totals_rows,
         colWidths=[110 * mm, 62 * mm],
         hAlign="RIGHT",
     )

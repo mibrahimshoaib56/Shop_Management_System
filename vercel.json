@@ -1,15 +1,20 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "framework": "vite",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://shop-inventory-backend.onrender.com/api/:path*"
+      "source": "/api/v1/:path*",
+      "destination": "/api/index.ts?path=:path*"
     },
     {
-      "source": "/health",
-      "destination": "https://shop-inventory-backend.onrender.com/health"
+      "source": "/api/:path*",
+      "destination": "/api/index.ts?path=:path*"
     },
     {
       "source": "/(.*)",

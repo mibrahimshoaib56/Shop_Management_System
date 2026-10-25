@@ -1,0 +1,48 @@
+{
+  "name": "shop-and-inventory",
+  "private": true,
+  "version": "4.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "npx tsx --watch api/dev-server.ts",
+    "dev:all": "npx concurrently \"npm run dev\" \"npm run dev:api\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.api.json --noEmit",
+    "typecheck:api": "tsc --project tsconfig.api.json --noEmit",
+    "create-user": "npx tsx scripts/create-user.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.51.0",
+    "@vercel/node": "^3.2.0",
+    "axios": "^1.7.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.441.0",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1",
+    "recharts": "^2.12.7",
+    "sonner": "^1.5.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^18.3.4",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "dotenv": "^16.4.5",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "tsx": "^4.19.2",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.2"
+  }
+}

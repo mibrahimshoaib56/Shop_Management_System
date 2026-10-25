@@ -9,12 +9,20 @@ from sqlalchemy.orm import selectinload
 from app.api.v1.deps import get_current_user
 from app.core.errors import AppError
 from app.db.session import get_db
+from app.models.customer import CustomerModel
+from app.models.khata_entry import KhataEntryModel
 from app.models.product import ProductModel
 from app.models.sale import SaleModel
 from app.models.sale_item import SaleItemModel
-from app.models.user import UserModel
+from app.models.user import UserModel, UserRole
 from app.schemas.common import Paginated
-from app.schemas.sales import CheckoutRequest, CheckoutResponse, SaleDetailOut, SaleOut
+from app.schemas.sales import (
+    CheckoutRequest,
+    CheckoutResponse,
+    RefundRequest,
+    SaleDetailOut,
+    SaleOut,
+)
 from app.services.pdf_service import build_receipt_pdf
 
 router = APIRouter(prefix="/sales", tags=["sales"])
@@ -112,16 +120,33 @@ async def checkout(
                 "line_profit": line_profit,
             }
         )
-    total_profit = total_revenue - total_cost
+    raw_discount = (payload.discount_amount or Decimal("0.00")).quantize(Decimal("0.01"))
+    discount_amount = min(raw_discount, total_revenue)
+    total_revenue = (total_revenue - discount_amount).quantize(Decimal("0.01"))
+    total_profit = (total_revenue - total_cost).quantize(Decimal("0.01"))
 
     transaction_code = await _generate_transaction_code(db)
+
+    # Validate khata customer if paying on credit
+    khata_customer: CustomerModel | None = None
+    if payload.payment_method == "Khata":
+        khata_customer = await db.get(CustomerModel, payload.customer_id)
+        if not khata_customer or not khata_customer.is_active:
+            raise AppError(404, "CUSTOMER_NOT_FOUND", f"Customer ID {payload.customer_id} not found.")
+
     sale = SaleModel(
         transaction_code=transaction_code,
-        customer_name=payload.customer_name,
+        customer_name=payload.customer_name or (khata_customer.name if khata_customer else None),
+        customer_id=payload.customer_id,
         total_revenue=total_revenue,
         total_cost=total_cost,
         total_profit=total_profit,
         sold_by=current_user.id,
+        payment_method=payload.payment_method or "Cash",
+        payment_split=payload.payment_split,
+        status="completed",
+        refund_amount=Decimal("0.00"),
+        discount_amount=discount_amount,
     )
     db.add(sale)
 
@@ -138,6 +163,22 @@ async def checkout(
         )
         product: ProductModel = values["product"]
         product.current_stock -= values["quantity"]
+
+    # If khata/credit sale: create ledger entry and update customer balance
+    if khata_customer is not None:
+        await db.flush()  # get sale.id before creating the entry
+        khata_entry = KhataEntryModel(
+            customer_id=khata_customer.id,
+            entry_type="credit",
+            amount=total_revenue,
+            sale_id=sale.id,
+            notes=f"Credit sale {transaction_code}",
+            recorded_by=current_user.id,
+        )
+        db.add(khata_entry)
+        khata_customer.outstanding_balance = (
+            khata_customer.outstanding_balance + total_revenue
+        ).quantize(Decimal("0.01"))
 
     try:
         await db.commit()
@@ -195,7 +236,13 @@ async def list_sales(
         .limit(page_size)
     )
     rows = await db.scalars(stmt)
-    items = [SaleOut.model_validate(row) for row in rows]
+    items = []
+    for row in rows:
+        out = SaleOut.model_validate(row)
+        if current_user.role != UserRole.admin:
+            out.total_profit = Decimal("0.00")
+            out.total_cost = Decimal("0.00")
+        items.append(out)
     return Paginated.build(items, page, page_size, int(total or 0))
 
 
@@ -208,10 +255,18 @@ async def get_sale(
     sale = await _get_sale_or_404(db, sale_id)
     out = SaleDetailOut.model_validate(sale)
     names = await _load_product_names(db, [item.product_id for item in sale.items])
+    is_admin = current_user.role == UserRole.admin
+    if not is_admin:
+        out.total_profit = Decimal("0.00")
+        out.total_cost = Decimal("0.00")
+
     for item_out, item_model in zip(out.items, sale.items):
         name, sku = names.get(item_model.product_id, (None, None))
         item_out.product_name = name
         item_out.product_sku = sku
+        if not is_admin:
+            item_out.unit_buying_price = Decimal("0.00")
+            item_out.line_profit = Decimal("0.00")
     return out
 
 
@@ -243,6 +298,8 @@ async def get_sale_pdf(
         cashier_row = await db.get(UserModel, sale.sold_by)
         cashier = cashier_row.username if cashier_row else None
 
+    # Show profit on internal receipt only if user is admin
+    show_profit = current_user.role == UserRole.admin
     pdf_bytes = build_receipt_pdf(
         transaction_code=sale.transaction_code,
         sale_date=sale.sale_date.strftime("%Y-%m-%d %H:%M UTC"),
@@ -252,6 +309,12 @@ async def get_sale_pdf(
         total_revenue=sale.total_revenue,
         total_cost=sale.total_cost,
         total_profit=sale.total_profit,
+        show_profit=show_profit,
+        payment_method=sale.payment_method or "Cash",
+        payment_split=sale.payment_split,
+        status=sale.status or "completed",
+        refund_amount=sale.refund_amount or Decimal("0.00"),
+        discount_amount=sale.discount_amount or Decimal("0.00"),
     )
     safe_customer = (sale.customer_name or "Walkin").replace(" ", "")
     filename = f"Invoice_{safe_customer}_{sale.transaction_code}.pdf"
@@ -260,3 +323,91 @@ async def get_sale_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'inline; filename="{filename}"'},
     )
+
+
+@router.post("/{sale_id}/refund", response_model=SaleDetailOut)
+async def refund_sale(
+    sale_id: int,
+    payload: RefundRequest,
+    current_user: UserModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> SaleDetailOut:
+    stmt = (
+        select(SaleModel)
+        .options(selectinload(SaleModel.items))
+        .where(SaleModel.id == sale_id)
+        .with_for_update()
+    )
+    sale = await db.scalar(stmt)
+    if sale is None:
+        raise AppError(404, "SALE_NOT_FOUND", f"Sale {sale_id} does not exist.")
+
+    if sale.status == "refunded":
+        raise AppError(400, "ALREADY_REFUNDED", "This transaction has already been fully refunded.")
+
+    items_by_pid = {item.product_id: item for item in sale.items}
+
+    # If payload.items is omitted or empty, full return of all unreturned items
+    if not payload.items:
+        specs = [
+            {"product_id": it.product_id, "quantity": it.quantity - it.returned_quantity}
+            for it in sale.items
+            if (it.quantity - it.returned_quantity) > 0
+        ]
+    else:
+        specs = [{"product_id": it.product_id, "quantity": it.quantity} for it in payload.items]
+
+    if not specs:
+        raise AppError(400, "NO_ITEMS_TO_REFUND", "No eligible items left to return in this sale.")
+
+    # Validate quantities
+    for s in specs:
+        pid = s["product_id"]
+        qty = s["quantity"]
+        if pid not in items_by_pid:
+            raise AppError(400, "INVALID_PRODUCT", f"Product ID {pid} does not belong to this sale.")
+        it = items_by_pid[pid]
+        rem = it.quantity - it.returned_quantity
+        if qty > rem:
+            raise AppError(
+                400,
+                "EXCESS_RETURN_QUANTITY",
+                f"Cannot refund {qty} units. Only {rem} units eligible for return.",
+            )
+
+    # Lock products to restore inventory
+    pids = sorted([s["product_id"] for s in specs])
+    prod_rows = await db.scalars(
+        select(ProductModel)
+        .where(ProductModel.id.in_(pids))
+        .order_by(ProductModel.id)
+        .with_for_update()
+    )
+    prods_by_id = {p.id: p for p in prod_rows}
+
+    total_refund_add = Decimal("0.00")
+    for s in specs:
+        pid = s["product_id"]
+        qty = s["quantity"]
+        it = items_by_pid[pid]
+        prod = prods_by_id[pid]
+
+        prod.current_stock += qty
+        it.returned_quantity += qty
+        total_refund_add += (it.unit_selling_price * qty).quantize(Decimal("0.01"))
+
+    sale.refund_amount = (sale.refund_amount + total_refund_add).quantize(Decimal("0.01"))
+    sale.refund_reason = payload.reason
+    sale.refunded_at = datetime.now(timezone.utc)
+
+    all_returned = all(it.returned_quantity >= it.quantity for it in sale.items)
+    sale.status = "refunded" if all_returned else "partially_refunded"
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise AppError(500, "REFUND_FAILED", "Could not process return and refund. Please retry.")
+
+    await db.refresh(sale)
+    return await get_sale(sale_id, current_user=current_user, db=db)

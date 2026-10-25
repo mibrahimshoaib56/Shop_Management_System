@@ -1,332 +1,148 @@
 # Centralized Shop & Inventory Management System
 
-A production-grade, web-based shop management platform that unifies **product catalog management, supplier restocking, real-time inventory tracking, point-of-sale (POS) billing, financial analytics, and automated profit calculation** into a single system.
-
-Built for retail environments where accuracy matters: every sale, purchase, and price change updates a central PostgreSQL database in real time through ACID-compliant transactions — stock levels, revenue, cost of goods sold (COGS), and net profit are always exact, with zero manual accounting.
+A production-ready, monolithic web application that unifies **product catalog management, customer storefront, supplier restocking, real-time inventory tracking, point-of-sale (POS) billing, Khata credit ledger, financial analytics, and automated profit calculation** into a single, cohesive codebase engineered for **1-click deployment on Vercel**.
 
 ---
 
-## Table of Contents
+## Architecture Overview
 
-1. [What This Project Does](#what-this-project-does)
-2. [Feature Highlights](#feature-highlights)
-3. [Technology Stack](#technology-stack)
-4. [System Architecture](#system-architecture)
-5. [Project Structure](#project-structure)
-6. [Prerequisites](#prerequisites)
-7. [Step-by-Step Setup & Run](#step-by-step-setup--run)
-8. [Environment Variables](#environment-variables)
-9. [First Login](#first-login)
-10. [API Documentation](#api-documentation)
-11. [Utility Scripts](#utility-scripts)
-12. [How Data Integrity Is Guaranteed](#how-data-integrity-is-guaranteed)
-13. [Troubleshooting](#troubleshooting)
+This project has been restructured as a **unified TypeScript Monolith**:
+- **Frontend SPA**: React 18, TypeScript, Tailwind CSS, Vite, TanStack React Query v5, Zustand.
+- **Serverless API**: Native TypeScript Vercel Functions (`api/index.ts` and `api/routes/*.ts`), connecting directly to PostgreSQL via `pg` connection pooling.
+- **Single Root Build**: Deploys as a single Vercel project with zero external server dependencies.
+
+```
+┌────────────────────────────────────────────────────────┐
+│                      VERCEL                            │
+│                                                        │
+│  ┌────────────────────────┐   ┌─────────────────────┐  │      SSL / TLS
+│  │   React SPA (Vite)     │   │ Node.js Serverless  │  │ ────────────────► PostgreSQL
+│  │   /dist/               │   │ /api/* Handlers     │  │                  (Neon / Supabase /
+│  │   • POS Billing        │   │ • Auth & Users      │  │                   Render / Local)
+│  │   • Public Storefront  │   │ • Products & Stock  │  │                  • Row Locks (FOR UPDATE)
+│  │   • Khata Ledger       │   │ • Sales & Khata     │  │                  • ACID Transactions
+│  │   • Analytics Dashboard│   │ • Analytics & Report│  │                  • Auto-migration on start
+│  └────────────────────────┘   └─────────────────────┘  │
+└────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## What This Project Does
+## Features
 
 | Module | Capability |
 |---|---|
-| Authentication | JWT-based login with two roles (Admin, Manager), real token revocation on logout |
-| Product Catalog | Create/edit/archive products with SKUs, prices, images, stock alert thresholds |
-| Categories & Suppliers | Full management with referential-safety on deletes |
-| Restocking | Supplier purchase entries that atomically increment stock; full purchase ledger |
-| POS Billing | Live product search, barcode-scanner support, multi-item cart, one-click checkout with automatic PDF receipt download |
-| Financial Engine | Automatic COGS and net-profit calculation per item and per transaction using immutable price snapshots |
-| Analytics Dashboard | Today's sales/profit KPIs, sales trends (daily/weekly/monthly), top products, category revenue share |
-| Reports | Export Sales / Inventory / Purchases / Profitability to CSV, Excel, or styled PDF |
-| Alerts | Automatic low-stock and out-of-stock detection with persistent sidebar warning counter |
-
----
-
-## Feature Highlights
-
-- **Race-condition-proof checkout** — PostgreSQL explicit row locking (`SELECT … FOR UPDATE`) makes overselling impossible even when multiple cashiers sell the last unit simultaneously.
-- **Immutable financial history** — every sale line stores its own buying/selling price snapshot; future price edits never distort past profits.
-- **True logout** — access tokens are blocklisted server-side on logout, so leaked tokens cannot be reused.
-- **Role-based access control** — Managers can operate the POS and view data; only Admins can change pricing, delete records, or manage users.
-- **Barcode scanner ready** — the POS search field natively accepts USB/Bluetooth HID scanners (scan + Enter adds the item).
-- **One-click receipts** — professional A4 PDF invoices generated automatically at checkout, plus a thermal-printer 80 mm layout mode.
-- **Excel-safe exports** — CSV files include UTF-8 BOM and XLSX files have frozen headers, opening cleanly in Microsoft Excel.
-
----
-
-## Technology Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, TypeScript (strict mode), Vite, Tailwind CSS, React Router 6 |
-| Frontend State | TanStack React Query v5 (server cache) · Zustand (auth/cart/UI state) |
-| Charts | Recharts |
-| Backend | Python 3.12, FastAPI, SQLAlchemy 2.0 (async) with asyncpg, Pydantic v2 |
-| Migrations | Alembic |
-| Database | Neon serverless PostgreSQL (compatible with PG 14+) |
-| Auth | PyJWT (HS256) + bcrypt (work factor 12) + server-side token blocklist |
-| Documents | ReportLab (PDF receipts/reports) · openpyxl (Excel exports) |
-
----
-
-## System Architecture
-
-```
-┌─────────────────────────┐         ┌──────────────────────────────┐        ┌──────────────────────┐
-│   React SPA (Vite)      │  HTTP   │   FastAPI REST API           │  SSL   │  Neon PostgreSQL     │
-│   localhost:5173        │ ──────► │   localhost:8000             │ ─────► │  (serverless cloud)  │
-│                         │  JSON   │                              │ asyncpg│                      │
-│  • POS billing UI       │         │  • JWT auth middleware       │        │  • ACID transactions │
-│  • Dashboard + charts   │         │  • Pydantic validation       │        │  • Row locking       │
-│  • Inventory screens    │         │  • Checkout engine (locks)   │        │  • FK constraints    │
-│  • Reports builder      │         │  • ReportLab PDF engine      │        │  • Trigram indexes   │
-└─────────────────────────┘         └──────────────────────────────┘        └──────────────────────┘
-        Dev proxy: /api → :8000              /api/v1/* endpoints                port 5432 (TLS)
-```
+| **Public Storefront** | Responsive customer catalog with search, category filtering, and self-service receipt lookup by phone. |
+| **POS Billing** | Barcode-scanner compatible, multi-item cart, instant checkout with row-level locks preventing overselling. |
+| **Khata Credit Ledger** | Udhaar / customer ledger tracking credit sales, partial payments, and live balance calculations. |
+| **Inventory Management** | Stock levels, minimum stock alerts, damaged/lost stock write-offs with automatic financial loss tracking. |
+| **Purchases & Suppliers** | Supplier directory and purchase orders with automated weighted stock incrementing. |
+| **Financial Analytics** | Today's revenue & profit KPIs, historical trends (daily/weekly/monthly), top-selling products, and category margins. |
+| **Reports** | On-demand CSV export for Sales, Inventory, Purchases, Profitability, and Customer Khata. |
+| **Authentication & RBAC** | JWT authentication with role-based access control (Admin vs Cashier) and server-side token revocation on logout. |
 
 ---
 
 ## Project Structure
 
 ```
-Shop and inventory/
-├── backend/
-│   ├── app/
-│   │   ├── main.py                 # FastAPI application factory + router wiring
-│   │   ├── core/
-│   │   │   ├── config.py           # Environment settings (.env driven)
-│   │   │   ├── security.py         # Bcrypt hashing + JWT create/decode
-│   │   │   └── errors.py           # Uniform {error:{code,message,details}} envelope
-│   │   ├── db/
-│   │   │   ├── base.py             # SQLAlchemy declarative base
-│   │   │   └── session.py          # Async engine + session dependency
-│   │   ├── models/                 # 8 ORM models (users, products, sales, ...)
-│   │   ├── schemas/                # Pydantic request/response contracts
-│   │   ├── api/v1/
-│   │   │   ├── deps.py             # get_current_user / require_admin dependencies
-│   │   │   └── routers/            # auth, users, products, categories, suppliers,
-│   │   │                           # purchases, sales (checkout), analytics, reports
-│   │   └── services/
-│   │       ├── pdf_service.py      # ReportLab receipt + report PDF builders
-│   │       └── report_service.py   # CSV / XLSX export builders
-│   ├── alembic/                    # Migration environment + versions/
-│   ├── alembic.ini
-│   ├── requirements.txt
-│   ├── .env.example                # Template — copy to .env and fill in
-│   └── scripts/
-│       ├── seed_admin.py           # Bootstrap first admin user
-│       ├── verify_db.py            # Inspect tables/users/sequence state
-│       └── reset_test_data.py      # Wipe business rows (dev use only)
-├── frontend/
-│   ├── src/
-│   │   ├── components/             # Layout, ProtectedRoute, RoleGate, modals, tables...
-│   │   ├── pages/                  # Login, Dashboard, POS, Products, Purchases, ...
-│   │   ├── stores/                 # authStore, cartStore, uiStore (Zustand)
-│   │   ├── lib/                    # Axios instance+interceptors, query client, formatters
-│   │   └── types/api.ts            # TypeScript mirrors of all API payloads
-│   ├── package.json
-│   └── vite.config.ts              # Dev proxy /api → http://localhost:8000
-├── scripts/
-│   └── backup.ps1                  # Nightly pg_dump backup with 30-day retention
-├── docs/
-│   └── FEATURE_AND_TECHNICAL_OVERVIEW.md
-└── README.md
+Shop-and-Inventory/
+├── api/                            # Vercel Serverless Functions (Node.js/TypeScript)
+│   ├── index.ts                    # Central API gateway & router (/api/v1/*)
+│   ├── dev-server.ts               # Local standalone API server (port 3001)
+│   ├── db.ts                       # PostgreSQL connection pool & auto-migration
+│   ├── auth.ts                     # JWT signing/verification, RBAC, error envelopes
+│   └── routes/
+│       ├── analytics.ts            # KPIs, trends, category revenue
+│       ├── auth.ts                 # /auth/login, /auth/logout, /auth/me
+│       ├── categories.ts           # Category CRUD
+│       ├── customers.ts            # Customer directory & Khata ledger
+│       ├── products.ts             # Products catalog & stock adjustments
+│       ├── public.ts               # Public catalog & customer invoice lookup
+│       ├── purchases.ts            # Supplier restocking & purchase orders
+│       ├── reports.ts              # CSV report generation
+│       ├── sales.ts                # Checkout (FOR UPDATE locks), refunds
+│       ├── suppliers.ts            # Supplier management
+│       └── users.ts                # Cashier/Admin user management
+├── src/                            # React Frontend
+│   ├── components/                 # Modals, Navbar, Layout, RoleGate, UI elements
+│   ├── pages/                      # PosPage, DashboardPage, CustomerCatalogPage, ...
+│   ├── stores/                     # authStore, cartStore, uiStore (Zustand)
+│   ├── lib/                        # Axios client, QueryClient, formatters
+│   └── types/                      # TypeScript API data contracts
+├── package.json                    # Monorepo scripts and dependencies
+├── vite.config.ts                  # Vite config with /api proxy to local dev server
+├── vercel.json                     # Vercel deployment routes and serverless runtime
+├── tsconfig.json                   # TypeScript config for frontend
+├── tsconfig.api.json               # TypeScript config for serverless API
+└── .env.example                    # Environment variable template
 ```
 
 ---
 
-## Prerequisites
+## Local Development Quickstart
 
-| Tool | Minimum Version | Check With |
-|---|---|---|
-| Python | 3.12 | `python --version` |
-| Node.js + npm | 20 / 11 | `node --version` |
-| PostgreSQL | 14+ (a Neon account works out of the box) | — |
-| Git (optional) | any | `git --version` |
+### 1. Clone & Install Dependencies
 
----
-
-## Step-by-Step Setup & Run
-
-### Step 1 — Get the code
-
-```powershell
-cd "D:\Projects\Shop and inventory"
-```
-
-(If cloning fresh: `git clone <repo-url>` then `cd` into it.)
-
-### Step 2 — Backend: create virtual environment & install dependencies
-
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-### Step 3 — Backend: configure environment
-
-```powershell
-copy .env.example .env
-```
-
-Open `.env` and fill in your values:
-
-```ini
-DATABASE_URL=postgresql+asyncpg://<user>:<password>@<host>/<dbname>?ssl=require
-JWT_SECRET=<any random string of 32+ characters>
-ADMIN_USERNAME=admin
-ADMIN_INITIAL_PASSWORD=<choose-a-strong-password-min-8-chars-with-a-digit>
-```
-
-> Note for Neon: their dashboard gives you `postgresql://...` — change the scheme to
-> `postgresql+asyncpg://...` and append `?ssl=require`. The app cannot talk to Neon without it.
-
-### Step 4 — Backend: create the database schema
-
-```powershell
-alembic upgrade head
-```
-
-This creates all 8 tables, constraints, performance indexes, and the transaction-code sequence.
-
-### Step 5 — Backend: create the first admin user
-
-```powershell
-python -m scripts.seed_admin
-```
-
-Idempotent — safe to re-run; it skips if the admin already exists.
-
-### Step 6 — Start the backend API
-
-```powershell
-uvicorn app.main:app --reload --port 8000
-```
-
-Verify: open <http://localhost:8000/health> → should return `{"status": "ok"}`.
-Interactive API docs: <http://localhost:8000/docs>
-
-### Step 7 — Frontend: install dependencies
-
-Open a **second terminal**:
-
-```powershell
-cd frontend
+```bash
 npm install
 ```
 
-### Step 8 — Start the web app
+### 2. Configure Environment
 
-```powershell
-npm run dev
+Copy `.env.example` to `.env`:
+
+```bash
+copy .env.example .env
 ```
 
-Open **http://localhost:5173** — you are done.
+Set your PostgreSQL connection string in `.env`:
 
-### Daily startup (after first setup)
-
-```powershell
-# Terminal 1
-cd backend ; .\.venv\Scripts\Activate.ps1 ; uvicorn app.main:app --reload
-
-# Terminal 2
-cd frontend ; npm run dev
+```ini
+DATABASE_URL=postgresql://username:password@your-db-host/dbname
+JWT_SECRET=your-random-32-character-secret-key
 ```
 
-Production build of the frontend (outputs static files to `frontend/dist/`):
+> **Note**: Database tables and the default admin user (`admin` / `admin1234`) will be automatically created on the first API request!
 
-```powershell
-npm run build
+### 3. Start Development Servers
+
+Run both the Vite frontend and local API simultaneously:
+
+```bash
+npm run dev:all
 ```
 
----
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **API Dev Server**: [http://localhost:3001/api](http://localhost:3001/api)
 
-## Environment Variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | SQLAlchemy async URL: `postgresql+asyncpg://user:pass@host/db?ssl=require` |
-| `JWT_SECRET` | Yes | Random string ≥32 chars used to sign tokens. Change it in production. |
-| `JWT_ALGORITHM` | No | Defaults to `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | No | Session lifetime, defaults `480` (8 hours) |
-| `ADMIN_USERNAME` | No | Seed script username, defaults `admin` |
-| `ADMIN_INITIAL_PASSWORD` | For seeding | Min 8 chars incl. letters and digits |
-| `CORS_ORIGINS` | No | Comma-separated allowed origins, defaults `http://localhost:5173` |
-
-Frontend (optional): `VITE_API_BASE_URL` in `frontend/.env` — defaults to `/api/v1` which the Vite dev proxy forwards to `:8000`.
+Or run them individually:
+- `npm run dev` — starts the Vite frontend
+- `npm run dev:api` — starts the TypeScript API dev server with file watching
 
 ---
 
-## First Login
+## Deploying to Vercel (1-Click)
 
-1. Open http://localhost:5173
-2. Log in with the admin username/password you set in `.env` (Step 3/5).
-3. Suggested first steps inside the app:
-   1. **Categories** → create your product categories
-   2. **Suppliers** → add your suppliers
-   3. **Products** → add products with buying/selling prices
-   4. **Purchases** → record initial stock (this increments inventory)
-   5. **Point of Sale** → start billing; receipts download automatically
+1. Push your repository to GitHub or GitLab.
+2. In the [Vercel Dashboard](https://vercel.com/new), click **Import Project** and select this repository.
+3. Keep default settings:
+   - **Framework Preset**: Vite
+   - **Root Directory**: `./`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add the following **Environment Variables**:
+   - `DATABASE_URL`: Your PostgreSQL connection string (Neon, Supabase, Render, etc.).
+   - `JWT_SECRET`: A secure random secret string for JWT authentication.
+5. Click **Deploy**.
 
-Roles: **Admin** = everything. **Manager** = POS, purchases, viewing, reports — no deletes, no pricing changes, no user management.
-
----
-
-## API Documentation
-
-Full interactive OpenAPI/Swagger UI is auto-generated by FastAPI:
-
-```
-http://localhost:8000/docs
-```
-
-All endpoints are prefixed with `/api/v1`. Every endpoint except `POST /api/v1/auth/login` requires an `Authorization: Bearer <token>` header. Errors always return a machine-readable envelope:
-
-```json
-{ "error": { "code": "INSUFFICIENT_STOCK", "message": "...", "details": [] } }
-```
-
-Key error codes: `INVALID_CREDENTIALS`, `TOKEN_BLOCKLISTED` (revoked session), `SKU_TAKEN`, `CATEGORY_IN_USE`, `PRODUCT_IN_USE`, `INSUFFICIENT_STOCK`, `VALIDATION_ERROR`.
+Vercel will automatically build the React frontend and deploy the `api/index.ts` serverless function. On the first cold start, the database tables and default admin will initialize automatically.
 
 ---
 
-## Utility Scripts
+## Default Credentials
 
-Run from `backend/` with the venv activated:
+- **Username**: `admin`
+- **Password**: `admin1234`
 
-| Command | Purpose |
-|---|---|
-| `python -m scripts.seed_admin` | Create the first admin (idempotent) |
-| `python -m scripts.verify_db` | Print tables, users, and sequence state |
-| `python -m scripts.reset_test_data` | Wipe all business rows (keeps users) — dev only |
-| `..\scripts\backup.ps1 -DatabaseUrl "<url>"` | Manual pg_dump backup + prune backups older than 30 days |
-
-Schedule the backup daily via Windows Task Scheduler for production use.
-
----
-
-## How Data Integrity Is Guaranteed
-
-- **Atomic checkout**: row locks → stock verification → master sale insert → line items → stock decrement → commit. Any failure rolls back everything; partial sales cannot exist.
-- **No overselling**: requested quantity exceeding locked stock returns `409 INSUFFICIENT_STOCK` before anything is written.
-- **Collision-free transaction codes**: generated from a database sequence (`TRX-YYYYMMDD-####`) inside the same transaction — unique even under concurrent checkouts.
-- **Protected references**: categories/products/purchases use `ON DELETE RESTRICT`, so historical records can never be orphaned; the UI offers archiving instead.
-- **Exact money math**: `DECIMAL(12,2)` end-to-end via Python `Decimal` — floating-point rounding errors are impossible.
-- **Validated at three layers**: browser forms → Pydantic request models → PostgreSQL CHECK constraints.
-
----
-
-## Troubleshooting
-
-| Symptom | Fix |
-|---|---|
-| `Cannot reach the server` toast in the app | Backend not running — start `uvicorn app.main:app` in terminal 1 |
-| Login always fails on first run | You skipped `python -m scripts.seed_admin`, or `ADMIN_INITIAL_PASSWORD` was empty during seeding |
-| Alembic fails to connect | Check `DATABASE_URL` scheme is `postgresql+asyncpg://` and includes `?ssl=require` for Neon |
-| `type "user_role" already exists` during migration | A previous partial migration left objects behind — drop/recreate the database, then rerun `alembic upgrade head` |
-| Port 8000 already in use | Another uvicorn is running: `Stop-Process -Name python` or use `--port 8001` (then update the Vite proxy target) |
-| Receipt PDF doesn't download | Allow popups/downloads for localhost in your browser settings |
-
----
-
-*Implementation of PRD v3.0 — see `docs/FEATURE_AND_TECHNICAL_OVERVIEW.md` for the complete feature/technical audit.*
+*(Be sure to change the admin password upon first login under Settings → User Management)*

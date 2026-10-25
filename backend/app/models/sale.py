@@ -34,12 +34,30 @@ class SaleModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     transaction_code: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     customer_name: Mapped[str | None] = mapped_column(String(150))
+    customer_id: Mapped[int | None] = mapped_column(
+        ForeignKey("customers.id", ondelete="SET NULL"), nullable=True
+    )
     total_revenue: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     total_cost: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     total_profit: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     sold_by: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     sale_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    payment_method: Mapped[str] = mapped_column(
+        String(50), nullable=False, server_default=text("'Cash'")
+    )
+    payment_split: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, server_default=text("'completed'")
+    )
+    refund_amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2), nullable=False, server_default=text("0.00")
+    )
+    refund_reason: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    refunded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    discount_amount: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2), nullable=False, server_default=text("0.00")
     )
 
     items = relationship(

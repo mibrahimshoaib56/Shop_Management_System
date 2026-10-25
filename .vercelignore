@@ -1,0 +1,14 @@
+# Vercel deployment ignore file
+# Ignore obsolete directories and legacy backend so Vercel only deploys the TypeScript monorepo
+backend/
+python/
+frontend/
+docs/
+scripts/
+api/index.py
+start_dev.bat
+start_dev.ps1
+render.yaml
+*.log
+.env
+.env.local

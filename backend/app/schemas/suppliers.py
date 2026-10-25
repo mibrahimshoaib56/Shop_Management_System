@@ -8,6 +8,7 @@ class SupplierBrief(BaseModel):
 
     id: int
     name: str
+    contact_info: str | None = None
 
 
 class SupplierCreate(BaseModel):

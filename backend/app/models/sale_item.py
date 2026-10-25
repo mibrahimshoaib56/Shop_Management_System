@@ -6,6 +6,7 @@ from sqlalchemy import (
     Index,
     Integer,
     Numeric,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -34,6 +35,9 @@ class SaleItemModel(Base):
     unit_selling_price: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     line_revenue: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     line_profit: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    returned_quantity: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default=text("0")
+    )
 
     sale = relationship("SaleModel", back_populates="items")
     product = relationship("ProductModel")

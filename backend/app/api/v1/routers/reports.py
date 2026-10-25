@@ -13,7 +13,7 @@ from app.services.report_service import build_csv, build_xlsx
 
 router = APIRouter(prefix="/reports", tags=["reports"])
 
-REPORT_TYPES = ("sales", "inventory", "purchases", "profitability")
+REPORT_TYPES = ("sales", "inventory", "purchases", "profitability", "khata")
 EXPORT_FORMATS = ("csv", "xlsx", "pdf")
 MAX_RANGE_DAYS = 366
 
@@ -64,6 +64,17 @@ REPORT_QUERIES: dict[str, dict] = {
             "GROUP BY 1 ORDER BY 1 DESC"
         ),
         "grand_total_column": 2,
+    },
+    "khata": {
+        "title": "Customer Khata (Udhaar) Report",
+        "headers": ["Customer Name", "Mobile Phone", "Address", "Outstanding Balance (Rs.)", "Member Since"],
+        "sql": (
+            "SELECT name, COALESCE(phone, 'N/A'), COALESCE(address, 'N/A'), "
+            "outstanding_balance, TO_CHAR(created_at, 'YYYY-MM-DD') "
+            "FROM customers WHERE is_active = TRUE "
+            "ORDER BY outstanding_balance DESC, name"
+        ),
+        "grand_total_column": 3,
     },
 }
 

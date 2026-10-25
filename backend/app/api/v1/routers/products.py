@@ -4,15 +4,19 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from decimal import Decimal
+
 from app.api.v1.deps import get_current_user, require_admin
 from app.core.errors import AppError
 from app.db.session import get_db
 from app.models.category import CategoryModel
 from app.models.product import ProductModel
+from app.models.stock_adjustment import StockAdjustmentModel
 from app.models.supplier import SupplierModel
-from app.models.user import UserModel
+from app.models.user import UserModel, UserRole
 from app.schemas.common import Paginated
 from app.schemas.products import ProductCreate, ProductOut, ProductUpdate
+from app.schemas.stock_adjustments import StockAdjustmentCreate, StockAdjustmentOut
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -93,7 +97,53 @@ async def list_products(
         .limit(page_size)
     )
     rows = await db.scalars(stmt)
-    items = [ProductOut.model_validate(row) for row in rows]
+    items = []
+    for row in rows:
+        out = ProductOut.model_validate(row)
+        if current_user.role != UserRole.admin:
+            out.buying_price = Decimal("0.00")
+        items.append(out)
+    return Paginated.build(items, page, page_size, int(total or 0))
+
+
+@router.get("/adjustments/history", response_model=Paginated[StockAdjustmentOut])
+async def list_stock_adjustments(
+    product_id: int | None = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    current_user: UserModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Paginated[StockAdjustmentOut]:
+    conditions = []
+    if product_id is not None:
+        conditions.append(StockAdjustmentModel.product_id == product_id)
+
+    count_stmt = select(func.count()).select_from(StockAdjustmentModel).where(*conditions)
+    total = await db.scalar(count_stmt)
+
+    offset = (page - 1) * page_size
+    stmt = (
+        select(StockAdjustmentModel)
+        .options(selectinload(StockAdjustmentModel.product), selectinload(StockAdjustmentModel.user))
+        .where(*conditions)
+        .order_by(StockAdjustmentModel.created_at.desc(), StockAdjustmentModel.id.desc())
+        .offset(offset)
+        .limit(page_size)
+    )
+    rows = await db.scalars(stmt)
+    items = []
+    for row in rows:
+        out = StockAdjustmentOut.model_validate(row)
+        if row.product:
+            out.product_name = row.product.name
+            out.product_sku = row.product.sku_code
+        if row.user:
+            out.cashier_username = row.user.username
+        if current_user.role != UserRole.admin:
+            out.unit_cost = Decimal("0.00")
+            out.total_loss = Decimal("0.00")
+        items.append(out)
+
     return Paginated.build(items, page, page_size, int(total or 0))
 
 
@@ -104,7 +154,10 @@ async def get_product(
     db: AsyncSession = Depends(get_db),
 ) -> ProductOut:
     product = await _get_product_or_404(db, product_id)
-    return ProductOut.model_validate(product)
+    out = ProductOut.model_validate(product)
+    if current_user.role != UserRole.admin:
+        out.buying_price = Decimal("0.00")
+    return out
 
 
 @router.post("", response_model=ProductOut, status_code=201)
@@ -174,3 +227,53 @@ async def delete_product(
             "PRODUCT_IN_USE",
             "Product has sales or purchase history. Archive it instead.",
         )
+
+
+@router.post("/{product_id}/adjust-stock", response_model=StockAdjustmentOut, status_code=201)
+async def adjust_product_stock(
+    product_id: int,
+    payload: StockAdjustmentCreate,
+    current_user: UserModel = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> StockAdjustmentOut:
+    stmt = select(ProductModel).where(ProductModel.id == product_id).with_for_update()
+    product = await db.scalar(stmt)
+    if product is None:
+        raise AppError(404, "PRODUCT_NOT_FOUND", f"Product {product_id} does not exist.")
+
+    if payload.quantity > product.current_stock:
+        raise AppError(
+            400,
+            "INSUFFICIENT_STOCK",
+            f"Cannot write off {payload.quantity} units. Available stock is only {product.current_stock}.",
+        )
+
+    unit_cost = Decimal(str(product.buying_price))
+    total_loss = (unit_cost * payload.quantity).quantize(Decimal("0.01"))
+    product.current_stock -= payload.quantity
+
+    adjustment = StockAdjustmentModel(
+        product_id=product.id,
+        quantity=payload.quantity,
+        reason=payload.reason,
+        notes=payload.notes,
+        unit_cost=unit_cost,
+        total_loss=total_loss,
+        adjusted_by=current_user.id,
+    )
+    db.add(adjustment)
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise AppError(500, "ADJUSTMENT_FAILED", "Could not adjust stock. Please retry.")
+
+    await db.refresh(adjustment)
+    out = StockAdjustmentOut.model_validate(adjustment)
+    out.product_name = product.name
+    out.product_sku = product.sku_code
+    out.cashier_username = current_user.username
+    if current_user.role != UserRole.admin:
+        out.unit_cost = Decimal("0.00")
+        out.total_loss = Decimal("0.00")
+    return out

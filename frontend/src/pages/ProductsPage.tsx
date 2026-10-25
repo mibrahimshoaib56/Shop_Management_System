@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Archive, Pencil, Plus, Trash2 } from "lucide-react"
+import { AlertOctagon, Archive, ClipboardList, MessageCircle, Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
-import type { Category, Paginated, Product, Supplier } from "@/types/api"
+import type { Category, Paginated, Product, StockAdjustment, Supplier } from "@/types/api"
 
 import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { EmptyState } from "@/components/EmptyState"
@@ -15,7 +16,8 @@ import { SearchInput } from "@/components/SearchInput"
 import { Spinner } from "@/components/Spinner"
 import { StockBadge } from "@/components/StockBadge"
 import { api, errorCode } from "@/lib/api"
-import { money } from "@/lib/format"
+import { formatDate, money } from "@/lib/format"
+import { buildSupplierReorderMessage, openWhatsAppLink } from "@/lib/whatsapp"
 import { useAuthStore } from "@/stores/authStore"
 
 interface ProductForm {
@@ -202,6 +204,218 @@ function ProductFormModal({
   )
 }
 
+const ADJUSTMENT_REASONS = [
+  "Damaged / Broken",
+  "Expired Product",
+  "Audit Loss / Discrepancy",
+  "Internal Store Use",
+  "Other",
+]
+
+function AdjustStockModal({
+  product,
+  onClose,
+  onSuccess,
+}: {
+  product: Product
+  onClose: () => void
+  onSuccess: () => void
+}) {
+  const [quantity, setQuantity] = useState("1")
+  const [reason, setReason] = useState("Damaged / Broken")
+  const [notes, setNotes] = useState("")
+
+  const qtyNum = Math.max(1, Math.min(product.current_stock, parseInt(quantity) || 1))
+  const user = useAuthStore((state) => state.user)
+  const isAdmin = user?.role === "admin"
+  const lossValue = qtyNum * Number(product.buying_price || 0)
+
+  const adjustMutation = useMutation({
+    mutationFn: async () => {
+      const payload = {
+        product_id: product.id,
+        quantity: qtyNum,
+        reason,
+        notes: notes.trim() || null,
+      }
+      return (await api.post(`/products/${product.id}/adjust-stock`, payload)).data
+    },
+    onSuccess: () => {
+      toast.success(`Successfully wrote off ${qtyNum} units of "${product.name}". Inventory updated.`)
+      onSuccess()
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message || err?.message || "Could not write off stock."
+      toast.error(msg)
+    },
+  })
+
+  return (
+    <Modal open title="Write Off Stock (Damaged / Expired)" onClose={onClose}>
+      <div className="space-y-4 text-xs">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <p className="text-sm font-semibold text-slate-900">{product.name}</p>
+          <p className="mt-0.5 font-mono text-slate-500">SKU: {product.sku_code}</p>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2">
+            <span className="text-slate-600">Current Stock:</span>
+            <span className="font-bold text-slate-900">{product.current_stock} units</span>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block font-semibold text-slate-700">Quantity to Write Off</label>
+          <input
+            type="number"
+            min="1"
+            max={product.current_stock}
+            className="input-field text-sm"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+          <span className="mt-1 block text-[11px] text-slate-500">
+            Stock after write-off:{" "}
+            <strong className="text-slate-700">{Math.max(0, product.current_stock - qtyNum)} units</strong>
+          </span>
+        </div>
+
+        <div>
+          <label className="mb-1 block font-semibold text-slate-700">Write-Off Reason</label>
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {ADJUSTMENT_REASONS.map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setReason(r)}
+                className={`rounded-md border px-2 py-1 text-[11px] transition ${
+                  reason === r
+                    ? "border-rose-500 bg-rose-50 font-semibold text-rose-800 ring-1 ring-rose-300"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block font-semibold text-slate-700">Audit Notes (Optional)</label>
+          <input
+            className="input-field"
+            placeholder="e.g. Broken in transit, expired batch #492…"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        </div>
+
+        {isAdmin && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2.5 text-amber-900">
+            <span className="text-slate-600">Total Loss Incurred: </span>
+            <strong className="font-bold text-amber-950">{money(lossValue)}</strong>
+            <p className="mt-0.5 text-[11px] text-amber-700">
+              Deducts directly from inventory without corrupting sales records or POS reports.
+            </p>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 border-t border-slate-200 pt-3">
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-4 py-2 font-semibold text-white shadow-xs hover:bg-rose-500 disabled:opacity-50"
+            disabled={adjustMutation.isPending || product.current_stock <= 0}
+            onClick={() => adjustMutation.mutate()}
+          >
+            <AlertOctagon className="h-4 w-4" />
+            <span>{adjustMutation.isPending ? "Adjusting…" : "Confirm Write Off"}</span>
+          </button>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+function StockAdjustmentsHistoryModal({ onClose }: { onClose: () => void }) {
+  const [page, setPage] = useState(1)
+  const user = useAuthStore((state) => state.user)
+  const isAdmin = user?.role === "admin"
+
+  const historyQuery = useQuery({
+    queryKey: ["stock-adjustments", page],
+    queryFn: async () =>
+      (
+        await api.get<Paginated<StockAdjustment>>("/products/adjustments/history", {
+          params: { page, page_size: 10 },
+        })
+      ).data,
+  })
+
+  return (
+    <Modal open title="Stock Write-Off & Adjustment Audit Log" onClose={onClose} wide>
+      <div className="space-y-3">
+        {historyQuery.isLoading ? (
+          <Spinner />
+        ) : historyQuery.isError ? (
+          <ErrorPanel onRetry={() => historyQuery.refetch()} />
+        ) : !historyQuery.data || historyQuery.data.items.length === 0 ? (
+          <EmptyState
+            title="No write-offs recorded"
+            subtitle="Damaged, expired, or audit write-offs will appear here."
+          />
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 text-slate-600">
+                <tr>
+                  <th className="th py-2">Date</th>
+                  <th className="th py-2">Product</th>
+                  <th className="th py-2 text-right">Qty Deducted</th>
+                  <th className="th py-2">Reason</th>
+                  {isAdmin && <th className="th py-2 text-right">Total Loss</th>}
+                  <th className="th py-2">Adjusted By</th>
+                  <th className="th py-2">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {historyQuery.data.items.map((adj) => (
+                  <tr key={adj.id}>
+                    <td className="td py-2 whitespace-nowrap text-slate-500">{formatDate(adj.created_at)}</td>
+                    <td className="td py-2">
+                      <p className="font-medium text-slate-900">{adj.product_name ?? `#${adj.product_id}`}</p>
+                      <p className="font-mono text-[11px] text-slate-400">{adj.product_sku ?? "-"}</p>
+                    </td>
+                    <td className="td py-2 text-right font-bold text-rose-600">-{adj.quantity}</td>
+                    <td className="td py-2">
+                      <span className="rounded bg-rose-50 px-2 py-0.5 font-semibold text-rose-700 ring-1 ring-rose-200">
+                        {adj.reason}
+                      </span>
+                    </td>
+                    {isAdmin && (
+                      <td className="td py-2 text-right font-medium text-slate-900">
+                        {money(adj.total_loss)}
+                      </td>
+                    )}
+                    <td className="td py-2 text-slate-600">{adj.cashier_username || "-"}</td>
+                    <td className="td max-w-xs truncate py-2 text-slate-500">{adj.notes || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Pagination
+              page={historyQuery.data.page}
+              pages={historyQuery.data.pages}
+              total={historyQuery.data.total}
+              onChange={setPage}
+            />
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
 function ProductsTable() {
   const user = useAuthStore((state) => state.user)
   const isAdmin = user?.role === "admin"
@@ -215,6 +429,29 @@ function ProductsTable() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
   const [archiveTarget, setArchiveTarget] = useState<Product | null>(null)
+  const [reorderProduct, setReorderProduct] = useState<Product | null>(null)
+  const [reorderPhone, setReorderPhone] = useState("")
+  const [adjustmentProduct, setAdjustmentProduct] = useState<Product | null>(null)
+  const [showAdjustmentsHistory, setShowAdjustmentsHistory] = useState(false)
+
+  const handleTriggerReorder = (product: Product) => {
+    const contact = product.supplier?.contact_info || ""
+    const digits = contact.replace(/\D/g, "")
+    if (digits.length >= 7) {
+      const msg = buildSupplierReorderMessage(product, product.supplier?.name)
+      openWhatsAppLink(digits, msg)
+    } else {
+      setReorderProduct(product)
+      setReorderPhone(contact)
+    }
+  }
+
+  const handleSendReorderModal = () => {
+    if (!reorderProduct) return
+    const msg = buildSupplierReorderMessage(reorderProduct, reorderProduct.supplier?.name)
+    openWhatsAppLink(reorderPhone, msg)
+    setReorderProduct(null)
+  }
 
   const categoriesQuery = useQuery({
     queryKey: ["categories", "all"],
@@ -284,16 +521,27 @@ function ProductsTable() {
           <input type="checkbox" checked={includeArchived} onChange={(e) => { setIncludeArchived(e.target.checked); setPage(1) }} />
           Show archived
         </label>
-        {isAdmin ? (
+        <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
-            className="btn-primary ml-auto"
-            onClick={() => { setEditing(null); setModalOpen(true) }}
+            className="btn-secondary"
+            onClick={() => setShowAdjustmentsHistory(true)}
+            title="View Damaged / Expired stock write-off logs"
           >
-            <Plus className="h-4 w-4" />
-            New Product
+            <ClipboardList className="h-4 w-4" />
+            Write-Off Logs
           </button>
-        ) : null}
+          {isAdmin ? (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => { setEditing(null); setModalOpen(true) }}
+            >
+              <Plus className="h-4 w-4" />
+              New Product
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {productsQuery.isLoading ? (
@@ -309,7 +557,7 @@ function ProductsTable() {
               <tr>
                 <th className="th">Product</th>
                 <th className="th">Category</th>
-                <th className="th text-right">Buying</th>
+                {isAdmin ? <th className="th text-right">Buying</th> : null}
                 <th className="th text-right">Selling</th>
                 <th className="th">Stock</th>
                 {isAdmin ? <th className="th text-right">Actions</th> : null}
@@ -334,12 +582,37 @@ function ProductsTable() {
                     </div>
                   </td>
                   <td className="td">{product.category?.name ?? "-"}</td>
-                  <td className="td text-right">{money(product.buying_price)}</td>
+                  {isAdmin ? <td className="td text-right">{money(product.buying_price)}</td> : null}
                   <td className="td text-right font-medium">{money(product.selling_price)}</td>
-                  <td className="td"><StockBadge stock={product.current_stock} minAlert={product.min_stock_alert} /></td>
+                  <td className="td">
+                    <div className="flex items-center gap-2">
+                      <StockBadge stock={product.current_stock} minAlert={product.min_stock_alert} />
+                      {product.current_stock <= product.min_stock_alert && !product.is_archived ? (
+                        <button
+                          type="button"
+                          onClick={() => handleTriggerReorder(product)}
+                          className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-300 hover:bg-emerald-100 transition shadow-xs"
+                          title="Send restock request to supplier via WhatsApp"
+                        >
+                          <MessageCircle className="h-3 w-3 text-emerald-600" />
+                          <span>Reorder</span>
+                        </button>
+                      ) : null}
+                    </div>
+                  </td>
                   {isAdmin ? (
                     <td className="td">
                       <div className="flex justify-end gap-1">
+                        {!product.is_archived && product.current_stock > 0 ? (
+                          <button
+                            type="button"
+                            className="rounded-md p-1.5 text-rose-600 hover:bg-rose-50"
+                            onClick={() => setAdjustmentProduct(product)}
+                            title="Write Off Damaged / Expired Stock"
+                          >
+                            <AlertOctagon className="h-4 w-4" />
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"
@@ -394,6 +667,72 @@ function ProductsTable() {
         />
       ) : null}
 
+      {/* Supplier Reorder WhatsApp Modal */}
+      {reorderProduct ? (
+        <Modal
+          open={reorderProduct !== null}
+          title="Reorder via WhatsApp"
+          onClose={() => setReorderProduct(null)}
+        >
+          <div className="space-y-3">
+            <p className="text-sm text-slate-600">
+              Generate a restock request for <strong className="text-slate-900">{reorderProduct.name}</strong> (SKU: {reorderProduct.sku_code}).
+            </p>
+            <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600 border border-slate-200">
+              <p>Current Stock: <strong className="text-amber-700">{reorderProduct.current_stock} units</strong></p>
+              <p>Supplier: <strong>{reorderProduct.supplier?.name || "General Supplier"}</strong></p>
+            </div>
+            <label className="block">
+              <span className="block text-xs font-semibold text-slate-700 mb-1">
+                Supplier WhatsApp Number
+              </span>
+              <input
+                className="input-field"
+                placeholder="e.g. 03001234567"
+                value={reorderPhone}
+                autoFocus
+                onChange={(e) => setReorderPhone(e.target.value)}
+              />
+            </label>
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
+              <button
+                type="button"
+                className="btn-secondary text-xs"
+                onClick={() => setReorderProduct(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-500 transition"
+                onClick={handleSendReorderModal}
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>Open WhatsApp</span>
+              </button>
+            </div>
+          </div>
+        </Modal>
+      ) : null}
+
+      {/* Adjust Stock Write-off Modal */}
+      {adjustmentProduct ? (
+        <AdjustStockModal
+          product={adjustmentProduct}
+          onClose={() => setAdjustmentProduct(null)}
+          onSuccess={() => {
+            setAdjustmentProduct(null)
+            void queryClient.invalidateQueries({ queryKey: ["products"] })
+            void queryClient.invalidateQueries({ queryKey: ["stock-adjustments"] })
+          }}
+        />
+      ) : null}
+
+      {/* Adjustments History Audit Log Modal */}
+      {showAdjustmentsHistory ? (
+        <StockAdjustmentsHistoryModal onClose={() => setShowAdjustmentsHistory(false)} />
+      ) : null}
+
       <ConfirmDialog
         open={archiveTarget !== null}
         title="Archive product"
@@ -408,9 +747,5 @@ function ProductsTable() {
 }
 
 export function ProductsPage() {
-  return (
-    <RoleGate>
-      <ProductsTable />
-    </RoleGate>
-  )
+  return <ProductsTable />
 }

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { FormField } from "@/components/FormField"
+import { RoleGate } from "@/components/RoleGate"
 import { api } from "@/lib/api"
 import { downloadBlobResponse } from "@/lib/file"
 
@@ -12,6 +13,7 @@ const REPORT_TYPES = [
   { value: "inventory", label: "Inventory" },
   { value: "purchases", label: "Purchases" },
   { value: "profitability", label: "Profitability" },
+  { value: "khata", label: "Customer Khata (Udhaar)" },
 ]
 
 const FORMATS = ["csv", "xlsx", "pdf"] as const
@@ -49,49 +51,51 @@ export function ReportsPage() {
     startDate && endDate && startDate > endDate ? "Start date must be on or before end date." : null
 
   return (
-    <div className="mx-auto max-w-xl space-y-5">
-      <h1 className="text-lg font-semibold text-slate-900">Reports &amp; Exports</h1>
+    <RoleGate>
+      <div className="mx-auto max-w-xl space-y-5">
+        <h1 className="text-lg font-semibold text-slate-900">Reports &amp; Exports</h1>
 
-      <div className="card space-y-4 p-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Report Type">
-            <select className="input-field" value={type} onChange={(e) => setType(e.target.value)}>
-              {REPORT_TYPES.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="Format">
-            <select className="input-field capitalize" value={format} onChange={(e) => setFormat(e.target.value as Format)}>
-              {FORMATS.map((f) => (
-                <option key={f} value={f} className="capitalize">{f.toUpperCase()}</option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="Start Date">
-            <input type="date" className="input-field" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </FormField>
-          <FormField label="End Date">
-            <input type="date" className="input-field" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </FormField>
+        <div className="card space-y-4 p-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField label="Report Type">
+              <select className="input-field" value={type} onChange={(e) => setType(e.target.value)}>
+                {REPORT_TYPES.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Format">
+              <select className="input-field capitalize" value={format} onChange={(e) => setFormat(e.target.value as Format)}>
+                {FORMATS.map((f) => (
+                  <option key={f} value={f} className="capitalize">{f.toUpperCase()}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Start Date">
+              <input type="date" className="input-field" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            </FormField>
+            <FormField label="End Date">
+              <input type="date" className="input-field" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            </FormField>
+          </div>
+
+          {rangeError ? <p className="text-sm text-red-600">{rangeError}</p> : null}
+
+          <button
+            type="button"
+            className="btn-primary w-full"
+            disabled={!!rangeError || exportMutation.isPending}
+            onClick={() => exportMutation.mutate()}
+          >
+            <FileDown className="h-4 w-4" />
+            {exportMutation.isPending ? "Generating…" : "Generate & Download"}
+          </button>
+
+          <p className="text-center text-xs text-slate-400">
+            Date ranges are capped at 366 days. PDF reports are landscape A4 with page numbers.
+          </p>
         </div>
-
-        {rangeError ? <p className="text-sm text-red-600">{rangeError}</p> : null}
-
-        <button
-          type="button"
-          className="btn-primary w-full"
-          disabled={!!rangeError || exportMutation.isPending}
-          onClick={() => exportMutation.mutate()}
-        >
-          <FileDown className="h-4 w-4" />
-          {exportMutation.isPending ? "Generating…" : "Generate & Download"}
-        </button>
-
-        <p className="text-center text-xs text-slate-400">
-          Date ranges are capped at 366 days. PDF reports are landscape A4 with page numbers.
-        </p>
       </div>
-    </div>
+    </RoleGate>
   )
 }

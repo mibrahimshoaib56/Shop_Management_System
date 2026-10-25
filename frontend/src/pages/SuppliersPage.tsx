@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Pencil, Plus, Trash2 } from "lucide-react"
+import { MessageCircle, Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
 import type { Paginated, Supplier } from "@/types/api"
@@ -14,6 +14,7 @@ import { RoleGate } from "@/components/RoleGate"
 import { SearchInput } from "@/components/SearchInput"
 import { Spinner } from "@/components/Spinner"
 import { api } from "@/lib/api"
+import { openWhatsAppLink } from "@/lib/whatsapp"
 
 interface SupplierForm {
   name: string
@@ -149,7 +150,31 @@ function SuppliersTable() {
               {suppliersQuery.data.items.map((supplier) => (
                 <tr key={supplier.id}>
                   <td className="td font-medium text-slate-900">{supplier.name}</td>
-                  <td className="td text-slate-500">{supplier.contact_info ?? "-"}</td>
+                  <td className="td text-slate-500">
+                    {supplier.contact_info ? (
+                      <div className="flex items-center gap-2">
+                        <span>{supplier.contact_info}</span>
+                        {supplier.contact_info.replace(/\D/g, "").length >= 7 ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openWhatsAppLink(
+                                supplier.contact_info!,
+                                `Hello ${supplier.name}, contacting you regarding inventory orders.`
+                              )
+                            }
+                            className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-300 hover:bg-emerald-100 transition shadow-xs"
+                            title="Open WhatsApp chat with supplier"
+                          >
+                            <MessageCircle className="h-3 w-3 text-emerald-600" />
+                            <span>Chat</span>
+                          </button>
+                        ) : null}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
                   <td className="td max-w-[240px] truncate text-slate-500">{supplier.address ?? "-"}</td>
                   <td className="td">
                     <div className="flex justify-end gap-1">

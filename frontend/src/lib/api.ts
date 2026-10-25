@@ -40,7 +40,11 @@ api.interceptors.response.use(
 
       if (status === 401) {
         useAuthStore.getState().clear()
-        if (!window.location.pathname.startsWith("/login")) {
+        const isPublicPage =
+          window.location.pathname === "/" ||
+          window.location.pathname.startsWith("/catalog") ||
+          window.location.pathname.startsWith("/login")
+        if (!isPublicPage) {
           window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname)}`)
         }
         return Promise.reject(error)
