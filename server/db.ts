@@ -216,6 +216,7 @@ export async function initDb(): Promise<void> {
             total_loss NUMERIC(12,2) NOT NULL DEFAULT 0,
             cashier_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
             cashier_username VARCHAR(80),
+            adjusted_by INTEGER,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
           );
           ALTER SEQUENCE stock_adjustments_id_seq OWNED BY stock_adjustments.id;
@@ -229,9 +230,11 @@ export async function initDb(): Promise<void> {
             id INTEGER PRIMARY KEY DEFAULT nextval('khata_entries_id_seq'),
             customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
             sale_id INTEGER REFERENCES sales(id) ON DELETE SET NULL,
-            entry_type VARCHAR(20) NOT NULL,
-            amount NUMERIC(12,2) NOT NULL,
+            entry_type VARCHAR(20) NOT NULL DEFAULT 'credit',
+            amount NUMERIC(14,2) NOT NULL DEFAULT 0,
             notes TEXT,
+            sale_id INTEGER,
+            recorded_by INTEGER,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
           );
           ALTER SEQUENCE khata_entries_id_seq OWNED BY khata_entries.id;

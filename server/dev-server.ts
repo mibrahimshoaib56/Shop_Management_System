@@ -3,11 +3,11 @@
  * This wraps the Vercel serverless handler in a plain Node HTTP server
  * so you can run `npm run dev:api` to serve /api/* on port 3001.
  *
- * Usage: npx tsx api/dev-server.ts
+ * Usage: npx tsx server/dev-server.ts
  */
 import "dotenv/config"
 import http from "http"
-import handler from "./index"
+import handler from "../api/index"
 import { initDb } from "./db"
 
 const PORT = process.env.API_PORT ? parseInt(process.env.API_PORT) : 3001

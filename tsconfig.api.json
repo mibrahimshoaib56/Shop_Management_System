@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -12,7 +14,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist-api",
-    "rootDir": "api"
+    "rootDir": "."
   },
-  "include": ["api"]
+  "include": [
+    "api/index.ts",
+    "server/**/*.ts"
+  ]
 }

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "npx tsx --watch api/dev-server.ts",
+    "dev:api": "npx tsx --watch server/dev-server.ts",
     "dev:all": "npx concurrently \"npm run dev\" \"npm run dev:api\"",
     "build": "vite build",
     "preview": "vite preview",
