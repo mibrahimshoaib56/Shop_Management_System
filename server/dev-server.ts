@@ -7,8 +7,8 @@
  */
 import "dotenv/config"
 import http from "http"
-import handler from "../api/index"
-import { initDb } from "./db"
+import handler from "../api/index.js"
+import { initDb } from "./db.js"
 
 const PORT = process.env.API_PORT ? parseInt(process.env.API_PORT) : 3001
 

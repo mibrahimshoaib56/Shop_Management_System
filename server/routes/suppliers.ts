@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import { query } from "../db"
-import { extractAuth, paginate, readBody, requireAdmin, requireAuth, sendJson } from "../auth"
+import { query } from "../db.js"
+import { extractAuth, paginate, readBody, requireAdmin, requireAuth, sendJson } from "../auth.js"
 
 export async function handleSuppliers(
   req: IncomingMessage,

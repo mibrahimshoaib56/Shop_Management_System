@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import { getDb, query } from "../db"
-import { extractAuth, paginate, readBody, sendJson } from "../auth"
+import { getDb, query } from "../db.js"
+import { extractAuth, paginate, readBody, sendJson } from "../auth.js"
 
 function escapeHtml(str: string): string {
   return String(str)

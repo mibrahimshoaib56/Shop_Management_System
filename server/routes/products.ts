@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import { getDb, query } from "../db"
-import { extractAuth, paginate, readBody, requireAdmin, requireAuth, sendJson } from "../auth"
+import { getDb, query } from "../db.js"
+import { extractAuth, paginate, readBody, requireAdmin, requireAuth, sendJson } from "../auth.js"
 
 async function getProduct(id: number) {
   const { rows } = await query(

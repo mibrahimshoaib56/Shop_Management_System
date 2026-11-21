@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import { query } from "../db"
-import { extractAuth, sendJson } from "../auth"
+import { query } from "../db.js"
+import { extractAuth, sendJson } from "../auth.js"
 
 export async function handleAnalytics(
   req: IncomingMessage,

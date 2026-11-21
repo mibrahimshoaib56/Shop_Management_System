@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http"
 import { createRequire } from "module"
-import { query } from "../db"
-import { extractAuth, readBody, requireAuth, sendJson, signToken } from "../auth"
+import { query } from "../db.js"
+import { extractAuth, readBody, requireAuth, sendJson, signToken } from "../auth.js"
 
 const require = createRequire(import.meta.url)
 const bcrypt = require("bcryptjs")

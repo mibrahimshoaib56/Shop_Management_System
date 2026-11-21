@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http"
 import { createRequire } from "module"
 import { randomUUID } from "crypto"
-import { query } from "./db"
+import { query } from "./db.js"
 
 const require = createRequire(import.meta.url)
 const jwt = require("jsonwebtoken")
