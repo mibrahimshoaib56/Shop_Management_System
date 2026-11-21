@@ -12,7 +12,7 @@ export async function handleSuppliers(
 
   // GET /suppliers
   if (method === "GET" && !id) {
-    const auth = extractAuth(req)
+    const auth = await extractAuth(req)
     if (!auth) return sendJson(res, 401, { message: "Auth required." }), true
     const url = new URL(req.url!, "http://localhost")
     const q = url.searchParams.get("q")?.trim() || ""
@@ -37,7 +37,7 @@ export async function handleSuppliers(
 
   // POST /suppliers
   if (method === "POST" && !id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { name, contact_info, address } = body
@@ -52,7 +52,7 @@ export async function handleSuppliers(
 
   // PUT /suppliers/:id
   if (method === "PUT" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { name, contact_info, address } = body
@@ -67,7 +67,7 @@ export async function handleSuppliers(
 
   // DELETE /suppliers/:id
   if (method === "DELETE" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     try {
       await query("DELETE FROM suppliers WHERE id=$1", [id])

@@ -10,7 +10,7 @@ export async function handleReports(
   const method = req.method?.toUpperCase()
   if (method !== "GET") return false
 
-  const auth = extractAuth(req)
+  const auth = await extractAuth(req)
   if (!auth || auth.role !== "admin") {
     return sendJson(res, 403, { message: "Admin access required." }), true
   }

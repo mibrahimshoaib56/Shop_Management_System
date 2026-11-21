@@ -13,7 +13,7 @@ export async function handleUsers(
 
   // GET /users
   if (method === "GET" && !id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const url = new URL(req.url!, `http://localhost`)
     const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"))
@@ -33,13 +33,15 @@ export async function handleUsers(
 
   // POST /users
   if (method === "POST" && !id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { username, password, full_name, role } = body
     if (!username || !password) {
       return sendJson(res, 400, { message: "Username and password required." }), true
     }
+    if (username.trim().length > 80) return sendJson(res, 400, { message: "Username must be 80 characters or less." }), true
+    if (password.length < 6) return sendJson(res, 400, { message: "Password must be at least 6 characters." }), true
     const hasher: any = (bcrypt as any)?.default || bcrypt
     const hash = typeof hasher?.hash === "function"
       ? await hasher.hash(password, 12)
@@ -54,7 +56,7 @@ export async function handleUsers(
 
   // PUT /users/:id
   if (method === "PUT" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { full_name, role, password } = body
@@ -83,7 +85,7 @@ export async function handleUsers(
 
   // DELETE /users/:id (disable)
   if (method === "DELETE" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     await query("UPDATE users SET is_active = FALSE WHERE id = $1", [id])
     sendJson(res, 200, { message: "User disabled." })

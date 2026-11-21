@@ -14,10 +14,12 @@ import { handleReports } from "../server/routes/reports"
 import { handlePublic } from "../server/routes/public"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*")
+  // CORS headers — restrict to the configured origin in production
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || "*"
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin)
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+  res.setHeader("Vary", "Origin")
 
   if (req.method === "OPTIONS") {
     res.status(204).end()

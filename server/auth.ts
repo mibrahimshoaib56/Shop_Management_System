@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http"
 import jwt from "jsonwebtoken"
+import { randomUUID } from "crypto"
+import { query } from "./db"
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production-secret"
 const JWT_EXPIRES = "8h"
@@ -52,7 +54,7 @@ export function isJWTPayload(payload: unknown): payload is JWTPayload {
 }
 
 export function signToken(payload: Omit<JWTPayload, "jti">): string {
-  const jti = Math.random().toString(36).slice(2) + Date.now().toString(36)
+  const jti = randomUUID()
   return jwt.sign({ ...payload, jti }, JWT_SECRET, { expiresIn: JWT_EXPIRES })
 }
 
@@ -110,22 +112,28 @@ export interface AuthUser {
   jti: string
 }
 
-export function extractAuth(req: IncomingMessage): AuthUser | null {
+export async function extractAuth(req: IncomingMessage): Promise<AuthUser | null> {
   const header = req.headers["authorization"] ?? ""
   if (!header.startsWith("Bearer ")) return null
   try {
     const payload = verifyToken(header.slice(7))
+    // Reject tokens that have been explicitly logged out
+    const { rows } = await query(
+      "SELECT 1 FROM token_blocklist WHERE jti = $1",
+      [payload.jti]
+    )
+    if (rows.length > 0) return null
     return { id: payload.sub, username: payload.username, role: payload.role, jti: payload.jti }
   } catch {
     return null
   }
 }
 
-export function requireAuth(
+export async function requireAuth(
   req: IncomingMessage,
   res: ServerResponse
-): AuthUser | null {
-  const user = extractAuth(req)
+): Promise<AuthUser | null> {
+  const user = await extractAuth(req)
   if (!user) {
     sendJson(res, 401, { message: "Authentication required." })
     return null
@@ -133,11 +141,11 @@ export function requireAuth(
   return user
 }
 
-export function requireAdmin(
+export async function requireAdmin(
   req: IncomingMessage,
   res: ServerResponse
-): AuthUser | null {
-  const user = requireAuth(req, res)
+): Promise<AuthUser | null> {
+  const user = await requireAuth(req, res)
   if (!user) return null
   if (user.role !== "admin") {
     sendJson(res, 403, { message: "Admin access required." })

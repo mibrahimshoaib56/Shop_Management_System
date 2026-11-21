@@ -8,7 +8,7 @@ export async function handleCustomers(
   segments: string[]
 ): Promise<boolean> {
   const method = req.method?.toUpperCase()
-  const auth = extractAuth(req)
+  const auth = await extractAuth(req)
   if (!auth) return sendJson(res, 401, { message: "Auth required." }), true
 
   // GET /customers/summary
@@ -149,6 +149,9 @@ export async function handleCustomers(
     const body = await readBody(req)
     const { name, phone, address, notes, email } = body
     if (!name?.trim()) return sendJson(res, 400, { message: "Name required." }), true
+    if (name.trim().length > 150) return sendJson(res, 400, { message: "Name must be 150 characters or less." }), true
+    if (phone && phone.trim().length > 30) return sendJson(res, 400, { message: "Phone must be 30 characters or less." }), true
+    if (email && email.trim().length > 150) return sendJson(res, 400, { message: "Email must be 150 characters or less." }), true
     const { rows } = await query(
       `INSERT INTO customers (name, phone, address, notes, email) VALUES ($1,$2,$3,$4,$5) RETURNING *`,
       [name.trim(), phone?.trim() || null, address?.trim() || null, notes?.trim() || null, email?.trim() || null]

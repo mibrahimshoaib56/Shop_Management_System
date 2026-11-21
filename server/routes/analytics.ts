@@ -10,7 +10,7 @@ export async function handleAnalytics(
   const method = req.method?.toUpperCase()
   if (method !== "GET") return false
 
-  const auth = extractAuth(req)
+  const auth = await extractAuth(req)
   if (!auth) return sendJson(res, 401, { message: "Auth required." }), true
   const action = segments[0]
 

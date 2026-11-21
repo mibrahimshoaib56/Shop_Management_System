@@ -233,7 +233,6 @@ export async function initDb(): Promise<void> {
             entry_type VARCHAR(20) NOT NULL DEFAULT 'credit',
             amount NUMERIC(14,2) NOT NULL DEFAULT 0,
             notes TEXT,
-            sale_id INTEGER,
             recorded_by INTEGER,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
           );
@@ -247,6 +246,19 @@ export async function initDb(): Promise<void> {
             jti VARCHAR(64) PRIMARY KEY,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
           );
+        `)
+      }
+
+      if (!existingTables.has("login_attempts")) {
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS login_attempts (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(80) NOT NULL,
+            ip VARCHAR(60) NOT NULL DEFAULT '',
+            attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+          );
+          CREATE INDEX IF NOT EXISTS idx_login_attempts_lookup
+            ON login_attempts (username, attempted_at);
         `)
       }
 
@@ -334,6 +346,10 @@ export async function initDb(): Promise<void> {
         await client.query(
           "INSERT INTO users (username, password_hash, full_name, role) VALUES ($1, $2, $3, $4) ON CONFLICT (username) DO NOTHING",
           ["admin", hash, "Store Admin", "admin"]
+        )
+        console.warn(
+          "\n  ⚠️  Default admin created (username: admin / password: admin1234)." +
+          "\n      CHANGE THIS PASSWORD immediately via Settings → User Management.\n"
         )
       }
 

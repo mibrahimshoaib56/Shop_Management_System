@@ -12,7 +12,7 @@ export async function handleCategories(
 
   // GET /categories
   if (method === "GET" && !id) {
-    const auth = extractAuth(req)
+    const auth = await extractAuth(req)
     if (!auth) { sendJson(res, 401, { message: "Auth required." }); return true }
     const url = new URL(req.url!, "http://localhost")
     const q = url.searchParams.get("q")?.trim() || ""
@@ -45,7 +45,7 @@ export async function handleCategories(
 
   // POST /categories
   if (method === "POST" && !id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { name, description } = body
@@ -60,7 +60,7 @@ export async function handleCategories(
 
   // PUT /categories/:id
   if (method === "PUT" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     const body = await readBody(req)
     const { name, description } = body
@@ -75,7 +75,7 @@ export async function handleCategories(
 
   // DELETE /categories/:id
   if (method === "DELETE" && id) {
-    const admin = requireAdmin(req, res)
+    const admin = await requireAdmin(req, res)
     if (!admin) return true
     try {
       await query("DELETE FROM categories WHERE id=$1", [id])

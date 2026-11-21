@@ -28,7 +28,7 @@ export async function handleProducts(
   segments: string[]
 ): Promise<boolean> {
   const method = req.method?.toUpperCase()
-  const auth = extractAuth(req)
+  const auth = await extractAuth(req)
   if (!auth) return sendJson(res, 401, { message: "Auth required." }), true
 
   // GET /products/adjustments/history
@@ -159,6 +159,11 @@ export async function handleProducts(
     // Check SKU uniqueness
     const { rows: existing } = await query("SELECT id FROM products WHERE sku_code=$1", [sku_code?.trim()])
     if (existing.length) return sendJson(res, 409, { message: "SKU code already exists." }), true
+
+    if (!sku_code?.trim()) return sendJson(res, 400, { message: "SKU code is required." }), true
+    if (!name?.trim()) return sendJson(res, 400, { message: "Product name is required." }), true
+    if (sku_code.trim().length > 80) return sendJson(res, 400, { message: "SKU code must be 80 characters or less." }), true
+    if (name.trim().length > 200) return sendJson(res, 400, { message: "Product name must be 200 characters or less." }), true
 
     const { rows } = await query(
       `INSERT INTO products (sku_code, name, description, image_url, category_id, supplier_id,

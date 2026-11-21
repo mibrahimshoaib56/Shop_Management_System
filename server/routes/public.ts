@@ -2,6 +2,15 @@ import type { IncomingMessage, ServerResponse } from "http"
 import { query } from "../db"
 import { paginate, sendJson } from "../auth"
 
+function escapeHtml(str: string): string {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+}
+
 function cleanPhone(raw: string): string {
   let digits = raw.replace(/\D/g, "")
   if (digits.startsWith("92") && digits.length >= 11) {
@@ -114,7 +123,7 @@ export async function handlePublic(
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Receipt - ${sale.transaction_code}</title>
+  <title>Receipt - ${escapeHtml(sale.transaction_code)}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; max-width: 600px; margin: auto; }
     h1 { font-size: 20px; margin-bottom: 4px; }
@@ -126,14 +135,14 @@ export async function handlePublic(
 </head>
 <body onload="window.print()">
   <h1>Store Receipt</h1>
-  <p>Transaction: <strong>${sale.transaction_code}</strong><br>
-  Date: ${new Date(sale.sale_date).toLocaleString()}<br>
-  Customer: ${sale.customer_name || 'Walk-in'}<br>
-  Payment: ${sale.payment_method}</p>
+  <p>Transaction: <strong>${escapeHtml(sale.transaction_code)}</strong><br>
+  Date: ${escapeHtml(new Date(sale.sale_date).toLocaleString())}<br>
+  Customer: ${escapeHtml(sale.customer_name || 'Walk-in')}<br>
+  Payment: ${escapeHtml(sale.payment_method)}</p>
   <table>
     <thead><tr><th>Item</th><th class="right">Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead>
     <tbody>
-      ${items.map((i: any) => `<tr><td>${i.product_name} (${i.product_sku})</td><td class="right">${i.quantity}</td><td class="right">${Number(i.unit_selling_price).toFixed(2)}</td><td class="right">${Number(i.line_revenue).toFixed(2)}</td></tr>`).join("")}
+      ${items.map((i: any) => `<tr><td>${escapeHtml(i.product_name)} (${escapeHtml(i.product_sku)})</td><td class="right">${i.quantity}</td><td class="right">${Number(i.unit_selling_price).toFixed(2)}</td><td class="right">${Number(i.line_revenue).toFixed(2)}</td></tr>`).join("")}
     </tbody>
     <tfoot>
       <tr class="total"><td colspan="3">Grand Total</td><td class="right">${Number(sale.total_revenue).toFixed(2)}</td></tr>

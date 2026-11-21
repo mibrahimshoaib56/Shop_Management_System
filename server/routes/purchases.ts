@@ -8,7 +8,7 @@ export async function handlePurchases(
   segments: string[]
 ): Promise<boolean> {
   const method = req.method?.toUpperCase()
-  const auth = extractAuth(req)
+  const auth = await extractAuth(req)
   if (!auth) return sendJson(res, 401, { message: "Auth required." }), true
 
   // GET /purchases
@@ -65,9 +65,18 @@ export async function handlePurchases(
       [product_id, supplier_id, Number(quantity), Number(unit_buying_price) || 0, invoice_number.trim()]
     )
 
-    // Update product stock and buying price
+    // Update product stock using weighted average cost
+    // new_avg = (old_stock * old_price + new_qty * new_price) / (old_stock + new_qty)
     await query(
-      `UPDATE products SET current_stock = current_stock + $1, buying_price = $2 WHERE id = $3`,
+      `UPDATE products
+       SET current_stock = current_stock + $1,
+           buying_price = CASE
+             WHEN (current_stock + $1) = 0 THEN buying_price
+             ELSE ROUND(
+               (current_stock * buying_price + $1 * $2) / (current_stock + $1),
+             4)
+           END
+       WHERE id = $3`,
       [Number(quantity), Number(unit_buying_price) || 0, product_id]
     )
 
