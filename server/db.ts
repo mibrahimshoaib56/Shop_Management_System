@@ -1,5 +1,8 @@
-import bcrypt from "bcryptjs"
+import { createRequire } from "module"
 import { Pool } from "pg"
+
+const require = createRequire(import.meta.url)
+const bcrypt = require("bcryptjs")
 
 let pool: Pool | null = null
 
@@ -339,10 +342,7 @@ export async function initDb(): Promise<void> {
       // 4. Seed default admin if no users exist
       const { rows: uRows } = await client.query("SELECT COUNT(*) AS cnt FROM users")
       if (parseInt(uRows[0]?.cnt || "0") === 0) {
-        const hasher: any = (bcrypt as any)?.default || bcrypt
-        const hash = typeof hasher?.hash === "function"
-          ? await hasher.hash("admin1234", 12)
-          : hasher.hashSync("admin1234", 12)
+        const hash = await bcrypt.hash("admin1234", 12)
         await client.query(
           "INSERT INTO users (username, password_hash, full_name, role) VALUES ($1, $2, $3, $4) ON CONFLICT (username) DO NOTHING",
           ["admin", hash, "Store Admin", "admin"]

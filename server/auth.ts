@@ -1,7 +1,10 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import jwt from "jsonwebtoken"
+import { createRequire } from "module"
 import { randomUUID } from "crypto"
 import { query } from "./db"
+
+const require = createRequire(import.meta.url)
+const jwt = require("jsonwebtoken")
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production-secret"
 const JWT_EXPIRES = "8h"

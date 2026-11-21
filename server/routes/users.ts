@@ -1,7 +1,10 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import bcrypt from "bcryptjs"
+import { createRequire } from "module"
 import { query } from "../db"
-import { paginate, readBody, requireAdmin, requireAuth, sendJson } from "../auth"
+import { paginate, readBody, requireAdmin, sendJson } from "../auth"
+
+const require = createRequire(import.meta.url)
+const bcrypt = require("bcryptjs")
 
 export async function handleUsers(
   req: IncomingMessage,
@@ -42,10 +45,7 @@ export async function handleUsers(
     }
     if (username.trim().length > 80) return sendJson(res, 400, { message: "Username must be 80 characters or less." }), true
     if (password.length < 6) return sendJson(res, 400, { message: "Password must be at least 6 characters." }), true
-    const hasher: any = (bcrypt as any)?.default || bcrypt
-    const hash = typeof hasher?.hash === "function"
-      ? await hasher.hash(password, 12)
-      : hasher.hashSync(password, 12)
+    const hash = await bcrypt.hash(password, 12)
     const { rows } = await query(
       "INSERT INTO users (username, password_hash, full_name, role) VALUES ($1,$2,$3,$4) RETURNING id, username, full_name, role, is_active, created_at",
       [username.trim(), hash, full_name?.trim() || null, role || "cashier"]
@@ -61,10 +61,7 @@ export async function handleUsers(
     const body = await readBody(req)
     const { full_name, role, password } = body
     if (password) {
-      const hasher: any = (bcrypt as any)?.default || bcrypt
-      const hash = typeof hasher?.hash === "function"
-        ? await hasher.hash(password, 12)
-        : hasher.hashSync(password, 12)
+      const hash = await bcrypt.hash(password, 12)
       await query(
         "UPDATE users SET full_name=$1, role=$2, password_hash=$3 WHERE id=$4",
         [full_name?.trim() || null, role, hash, id]

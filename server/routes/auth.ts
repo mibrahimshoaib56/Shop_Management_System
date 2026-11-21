@@ -1,7 +1,10 @@
 import type { IncomingMessage, ServerResponse } from "http"
-import bcrypt from "bcryptjs"
+import { createRequire } from "module"
 import { query } from "../db"
 import { extractAuth, readBody, requireAuth, sendJson, signToken } from "../auth"
+
+const require = createRequire(import.meta.url)
+const bcrypt = require("bcryptjs")
 
 export async function handleAuth(
   req: IncomingMessage,
@@ -45,10 +48,7 @@ export async function handleAuth(
       )
       return sendJson(res, 401, { message: "Invalid credentials or account disabled." }), true
     }
-    const hasher: any = (bcrypt as any)?.default || bcrypt
-    const valid = typeof hasher?.compare === "function"
-      ? await hasher.compare(password, user.password_hash)
-      : hasher.compareSync(password, user.password_hash)
+    const valid = await bcrypt.compare(password, user.password_hash)
     if (!valid) {
       await query(
         "INSERT INTO login_attempts (username, ip) VALUES ($1, $2)",
