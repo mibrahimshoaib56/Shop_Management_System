@@ -4,6 +4,9 @@
 
 @layer base {
   /* Smooth scrolling and better touch on mobile */
+  html, body {
+    overscroll-behavior: none;
+  }
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
@@ -52,5 +55,6 @@
     @apply min-h-[44px] min-w-[44px];
   }
 }
+
 
 
