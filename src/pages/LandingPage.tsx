@@ -11,10 +11,10 @@ export function LandingPage() {
   const toggleDarkMode = useUiStore((state) => state.toggleDarkMode)
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-900 text-slate-100">
+    <div className="flex min-h-screen flex-col bg-black text-slate-100">
 
       {/* ── Header ── */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md">
+      <header className="border-b border-slate-800 bg-black/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           {/* Brand */}
           <div className="flex items-center gap-3">
@@ -22,7 +22,7 @@ export function LandingPage() {
               <ShoppingBag className="h-5 w-5" />
             </div>
             <span className="text-sm font-bold tracking-tight text-white">
-              InventoryXYZ
+              MIGOS ENTERPRISE
             </span>
           </div>
 
@@ -32,7 +32,7 @@ export function LandingPage() {
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+              className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 hover:text-white"
               title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -40,7 +40,7 @@ export function LandingPage() {
 
             <Link
               to="/catalog"
-              className="hidden sm:inline-flex rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700 hover:text-white"
+              className="hidden sm:inline-flex rounded-lg border border-slate-700 bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700 hover:text-white"
             >
               Customer Catalog
             </Link>
@@ -79,12 +79,12 @@ export function LandingPage() {
           {/* Headline */}
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
             Welcome to{" "}
-            <span className="text-emerald-400">InventoryXYZ</span>
+            <span className="text-emerald-400">MIGOS ENTERPRISE</span>
           </h1>
 
           {/* ── Customer Storefront Card ── */}
           <div className="mx-auto mt-12 max-w-sm">
-            <div className="rounded-2xl border border-slate-700 bg-slate-800/60 p-8 text-center shadow-xl transition hover:border-emerald-700 hover:bg-slate-800">
+            <div className="rounded-2xl border border-slate-700 bg-zinc-950/60 p-8 text-center shadow-xl transition hover:border-emerald-700 hover:bg-zinc-900">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-400 ring-1 ring-emerald-700">
                 <Store className="h-7 w-7" />
               </div>
@@ -114,9 +114,10 @@ export function LandingPage() {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-800 py-4 text-center text-xs text-slate-600">
-        © {new Date().getFullYear()} InventoryXYZ — All rights reserved
+      <footer className="border-t border-zinc-900 py-4 text-center text-xs text-slate-600">
+        © {new Date().getFullYear()} MIGOS ENTERPRISE — All rights reserved
       </footer>
     </div>
   )
 }
+

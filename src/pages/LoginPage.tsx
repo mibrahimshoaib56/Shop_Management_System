@@ -105,7 +105,7 @@ export function LoginPage() {
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-lg">
             <ShoppingBag className="h-5 w-5" />
           </div>
-          <span className="text-xs font-bold tracking-tight text-emerald-400">InventoryXYZ</span>
+          <span className="text-xs font-bold tracking-tight text-emerald-400">MIGOS ENTERPRISE</span>
           <h1 className="text-lg font-bold text-white">
             {selectedRole === "admin" ? "Store Admin Login" : "Cashier Station Login"}
           </h1>
@@ -200,3 +200,4 @@ export function LoginPage() {
     </div>
   )
 }
+

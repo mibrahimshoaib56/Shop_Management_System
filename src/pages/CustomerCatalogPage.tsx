@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+﻿import { useQuery } from "@tanstack/react-query"
 import {
   ArrowUpDown,
   Building2,
@@ -139,10 +139,10 @@ export function CustomerCatalogPage() {
             </div>
             <div>
               <h1 className="text-base font-bold text-slate-900 sm:text-lg">
-                Shop &amp; Retail Store
+                MIGOS ENTERPRISE
               </h1>
               <p className="hidden text-xs text-slate-500 sm:block">
-                Digital Catalog &amp; Customer Portal
+                Digital Catalog & Customer Portal
               </p>
             </div>
           </Link>
@@ -230,7 +230,7 @@ export function CustomerCatalogPage() {
               <input
                 type="search"
                 className="input-field pl-9 pr-8"
-                placeholder="Search products by title or SKU code…"
+                placeholder="Search products by title or SKU codeâ€¦"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)
@@ -275,8 +275,8 @@ export function CustomerCatalogPage() {
                   }}
                   className="bg-transparent font-medium text-slate-700 focus:outline-none"
                 >
-                  <option value="name">Name (A → Z)</option>
-                  <option value="-name">Name (Z → A)</option>
+                  <option value="name">Name (A â†’ Z)</option>
+                  <option value="-name">Name (Z â†’ A)</option>
                   <option value="price_asc">Price: Low to High</option>
                   <option value="price_desc">Price: High to Low</option>
                   <option value="-created_at">Newest Arrivals</option>
@@ -576,7 +576,7 @@ export function CustomerCatalogPage() {
                                 </span>
                               </div>
                               <p className="mt-0.5 text-xs text-slate-500">
-                                {invoice.customer_name || "Customer"} · {invoice.items.length} items
+                                {invoice.customer_name || "Customer"} Â· {invoice.items.length} items
                               </p>
                             </div>
 
@@ -674,3 +674,4 @@ export function CustomerCatalogPage() {
     </div>
   )
 }
+
