@@ -184,22 +184,30 @@ export function Layout() {
 
         {/* ── Top Header ── */}
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800 bg-black px-4">
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 lg:hidden"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          {/* Left: mobile menu + brand */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 lg:hidden"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                <ShoppingBag className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-bold text-white">MIGOS ENTERPRISE</span>
+            </div>
+          </div>
 
+          {/* Center: subtitle */}
           <p className="hidden text-sm font-medium text-slate-400 lg:block">
             Centralized Shop &amp; Inventory Management
           </p>
-          <p className="text-sm font-bold text-white lg:hidden">MIGOS ENTERPRISE</p>
 
+          {/* Right: dark mode toggle + user + logout */}
           <div className="flex items-center gap-2 lg:gap-3">
-            {/* Dark mode toggle */}
             <button
               type="button"
               onClick={toggleDarkMode}
@@ -208,14 +216,13 @@ export function Layout() {
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-
             <div className="hidden text-right lg:block">
-              <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name ?? user?.username}</p>
-              <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user?.role}</p>
+              <p className="text-sm font-medium text-white">{user?.full_name ?? user?.username}</p>
+              <p className="text-xs capitalize text-slate-400">{user?.role}</p>
             </div>
             <button
               type="button"
-              className="btn-secondary dark:border-slate-600 dark:bg-zinc-900 dark:text-slate-200 dark:hover:bg-slate-600"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-600 bg-transparent px-3 py-1.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50"
               onClick={() => logoutMutation.mutate()}
               disabled={logoutMutation.isPending}
             >
@@ -232,6 +239,7 @@ export function Layout() {
     </div>
   )
 }
+
 
 
 
