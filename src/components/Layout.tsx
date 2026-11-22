@@ -184,22 +184,14 @@ export function Layout() {
 
         {/* ── Top Header ── */}
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800 bg-black px-4">
-          {/* Left: mobile menu + brand */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 lg:hidden"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white">
-                <ShoppingBag className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-bold text-white">MIGOS ENTERPRISE</span>
-            </div>
-          </div>
+          {/* Left: mobile menu button only */}
+          <button
+            type="button"
+            className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 lg:hidden"
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
           {/* Center: subtitle */}
           <p className="hidden text-sm font-medium text-slate-400 lg:block">
@@ -239,6 +231,7 @@ export function Layout() {
     </div>
   )
 }
+
 
 
 
