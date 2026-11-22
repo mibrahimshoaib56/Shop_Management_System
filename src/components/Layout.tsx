@@ -164,8 +164,8 @@ export function Layout() {
         </nav>
         <div className="border-t border-slate-200 p-3 dark:border-zinc-800">
           <div className="mb-2 px-2">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name ?? user?.username}</p>
-            <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user?.role}</p>
+            <p className="text-sm font-medium text-white">{user?.full_name ?? user?.username}</p>
+            <p className="text-xs capitalize text-slate-400">{user?.role}</p>
           </div>
           <button
             type="button"
@@ -183,35 +183,35 @@ export function Layout() {
       <div className="flex min-w-0 flex-1 flex-col">
 
         {/* ── Top Header ── */}
-        <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-zinc-800 dark:bg-black">
+        <header className="flex h-14 items-center justify-between border-b border-zinc-800 bg-black px-4">
           {/* Mobile menu button */}
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden dark:text-slate-400 dark:hover:bg-zinc-800"
+            className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 lg:hidden"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </button>
 
-          <p className="hidden text-sm font-medium text-slate-500 lg:block dark:text-slate-400">
+          <p className="hidden text-sm font-medium text-slate-400 lg:block">
             Centralized Shop &amp; Inventory Management
           </p>
-          <p className="text-sm font-bold text-slate-900 lg:hidden dark:text-white">MIGOS ENTERPRISE</p>
+          <p className="text-sm font-bold text-white lg:hidden">MIGOS ENTERPRISE</p>
 
           <div className="flex items-center gap-2 lg:gap-3">
             {/* Dark mode toggle */}
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-zinc-800"
+              className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 hover:text-white"
               title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
             <div className="hidden text-right lg:block">
-              <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name ?? user?.username}</p>
-              <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user?.role}</p>
+              <p className="text-sm font-medium text-white">{user?.full_name ?? user?.username}</p>
+              <p className="text-xs capitalize text-slate-400">{user?.role}</p>
             </div>
             <button
               type="button"
@@ -232,4 +232,5 @@ export function Layout() {
     </div>
   )
 }
+
 
