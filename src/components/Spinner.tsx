@@ -1,8 +1,16 @@
+﻿import { Lottie } from "lottie-react"
+
+import loaderAnimation from "@/assets/loading.json"
+
 export function Spinner({ label }: { label?: string }) {
   return (
-    <div className="flex items-center justify-center gap-3 py-10 text-slate-500">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-sky-600" />
-      {label ? <span className="text-sm">{label}</span> : null}
+    <div className="flex flex-col items-center justify-center gap-2 py-10">
+      <Lottie
+        animationData={loaderAnimation}
+        loop={true}
+        style={{ width: 80, height: 80 }}
+      />
+      {label ? <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span> : null}
     </div>
   )
 }
