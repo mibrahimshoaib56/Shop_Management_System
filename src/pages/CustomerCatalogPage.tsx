@@ -129,19 +129,19 @@ export function CustomerCatalogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-black dark:text-slate-100">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs dark:border-zinc-800 dark:bg-black/95">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-3 transition hover:opacity-90">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-md">
               <ShoppingBag className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-slate-900 sm:text-lg">
+              <h1 className="text-base font-bold text-slate-900 sm:text-lg dark:text-white">
                 MIGOS ENTERPRISE
               </h1>
-              <p className="hidden text-xs text-slate-500 sm:block">
+              <p className="hidden text-xs text-slate-500 sm:block dark:text-slate-400">
                 Digital Catalog & Customer Portal
               </p>
             </div>
@@ -192,8 +192,8 @@ export function CustomerCatalogPage() {
       </header>
 
       {/* Hero Welcome Banner */}
-      <section className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 px-4 py-8 text-white sm:px-6 lg:py-12">
-        <div className="mx-auto max-w-7xl">
+      <section className="px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-7xl"><div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 px-6 py-7 text-white shadow-lg sm:px-8 sm:py-8">
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
               <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/20 px-3 py-1 text-xs font-medium text-sky-300 ring-1 ring-sky-500/30">
@@ -216,7 +216,7 @@ export function CustomerCatalogPage() {
               <span>Lookup Your Bill / Receipt</span>
             </button>
           </div>
-        </div>
+        </div></div>
       </section>
 
       {/* Main Catalog Section */}
@@ -674,4 +674,5 @@ export function CustomerCatalogPage() {
     </div>
   )
 }
+
 
