@@ -83,7 +83,7 @@ export function Layout() {
           onClick={onClick}
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-              isActive ? "bg-sky-50 text-sky-700" : "text-slate-600 hover:bg-slate-100"
+              isActive ? "bg-emerald-50 text-emerald-700" : "text-slate-600 hover:bg-slate-100"
             }`
           }
           title={collapsed ? item.label : undefined}
@@ -110,8 +110,8 @@ export function Layout() {
         }`}
       >
         <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4">
-          <ShoppingBag className="h-6 w-6 shrink-0 text-sky-600" />
-          {!collapsed ? <span className="truncate text-sm font-bold text-slate-900">Shop Manager</span> : null}
+          <ShoppingBag className="h-6 w-6 shrink-0 text-emerald-500" />
+          {!collapsed ? <span className="truncate text-sm font-bold text-slate-900">InventoryXYZ</span> : null}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           <NavLinks />
@@ -142,8 +142,8 @@ export function Layout() {
       >
         <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6 text-sky-600" />
-            <span className="text-sm font-bold text-slate-900">Shop Manager</span>
+            <ShoppingBag className="h-6 w-6 text-emerald-500" />
+            <span className="text-sm font-bold text-slate-900">InventoryXYZ</span>
           </div>
           <button
             type="button"
@@ -190,7 +190,7 @@ export function Layout() {
           <p className="hidden text-sm font-medium text-slate-500 lg:block">
             Centralized Shop &amp; Inventory Management
           </p>
-          <p className="text-sm font-bold text-slate-900 lg:hidden">Shop Manager</p>
+          <p className="text-sm font-bold text-slate-900 lg:hidden">InventoryXYZ</p>
 
           <div className="flex items-center gap-2 lg:gap-3">
             <div className="hidden text-right lg:block">
