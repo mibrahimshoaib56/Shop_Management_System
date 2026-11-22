@@ -115,9 +115,9 @@ export function Layout() {
           collapsed ? "w-16" : "w-60"
         }`}
       >
-        <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4 dark:border-zinc-800">
+        <div className="flex h-14 items-center gap-2 border-b border-zinc-800 bg-black px-4">
           <ShoppingBag className="h-6 w-6 shrink-0 text-emerald-500" />
-          {!collapsed ? <span className="truncate text-sm font-bold text-slate-900 dark:text-white">MIGOS ENTERPRISE</span> : null}
+          {!collapsed ? <span className="truncate text-sm font-bold text-white">MIGOS ENTERPRISE</span> : null}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           <NavLinks />
@@ -146,15 +146,15 @@ export function Layout() {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4 dark:border-zinc-800">
+        <div className="flex h-14 items-center justify-between border-b border-zinc-800 bg-black px-4">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-6 w-6 text-emerald-500" />
-            <span className="text-sm font-bold text-slate-900 dark:text-white">MIGOS ENTERPRISE</span>
+            <span className="text-sm font-bold text-white">MIGOS ENTERPRISE</span>
           </div>
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-zinc-900"
+            className="rounded-lg p-1 text-slate-400 hover:bg-zinc-900"
           >
             <X className="h-5 w-5" />
           </button>
@@ -196,7 +196,7 @@ export function Layout() {
           <p className="hidden text-sm font-medium text-slate-400 lg:block">
             Centralized Shop &amp; Inventory Management
           </p>
-          <p className="text-sm font-bold text-slate-900 dark:text-white lg:hidden">MIGOS ENTERPRISE</p>
+          <p className="text-sm font-bold text-white lg:hidden">MIGOS ENTERPRISE</p>
 
           <div className="flex items-center gap-2 lg:gap-3">
             {/* Dark mode toggle */}
@@ -232,6 +232,7 @@ export function Layout() {
     </div>
   )
 }
+
 
 
 
