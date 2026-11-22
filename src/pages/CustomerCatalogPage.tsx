@@ -136,14 +136,14 @@ export function CustomerCatalogPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-black dark:text-slate-100">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs dark:border-zinc-800 dark:bg-black/95">
+      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-black backdrop-blur-md shadow-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-3 transition hover:opacity-90">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md">
               <ShoppingBag className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-slate-900 sm:text-lg dark:text-white">
+              <h1 className="text-base font-bold text-white sm:text-lg">
                 MIGOS ENTERPRISE
               </h1>
             </div>
@@ -154,7 +154,7 @@ export function CustomerCatalogPage() {
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-zinc-800"
+              className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 hover:text-white"
               title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -164,7 +164,7 @@ export function CustomerCatalogPage() {
             <button
               type="button"
               onClick={() => setIsInvoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 transition hover:bg-sky-100 sm:px-3.5 sm:py-2 sm:text-sm"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500 bg-sky-900/30 px-3 py-1.5 text-xs font-semibold text-sky-300 transition hover:bg-sky-800/40 sm:px-3.5 sm:py-2 sm:text-sm"
             >
               <FileText className="h-4 w-4" />
               <span>Find My Invoices</span>
@@ -175,9 +175,9 @@ export function CustomerCatalogPage() {
               href={createWhatsAppSupportLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex sm:text-sm"
+              className="hidden items-center gap-1.5 rounded-lg border border-emerald-600 bg-emerald-900/30 px-3 py-1.5 text-xs font-semibold text-emerald-400 transition hover:bg-emerald-800/40 md:inline-flex sm:text-sm"
             >
-              <MessageCircle className="h-4 w-4 text-emerald-600" />
+              <MessageCircle className="h-4 w-4 text-emerald-400" />
               <span>WhatsApp Store</span>
             </a>
 
@@ -193,7 +193,7 @@ export function CustomerCatalogPage() {
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 sm:px-3.5 sm:py-2 sm:text-sm"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-zinc-800 sm:px-3.5 sm:py-2 sm:text-sm"
               >
                 <LogIn className="h-4 w-4" />
                 <span>Staff Login</span>
@@ -235,7 +235,7 @@ export function CustomerCatalogPage() {
             {/* Quick Controls */}
             <div className="flex flex-wrap items-center gap-3">
               {/* In Stock Only Checkbox */}
-              <label className="flex cursor-pointer select-none items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 sm:text-sm">
+              <label className="flex cursor-pointer select-none items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-300 dark:hover:bg-zinc-800">
                 <input
                   type="checkbox"
                   checked={inStockOnly}
@@ -249,7 +249,7 @@ export function CustomerCatalogPage() {
               </label>
 
               {/* Sort Selector */}
-              <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 sm:text-sm">
+              <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-300">
                 <ArrowUpDown className="h-4 w-4 text-slate-400" />
                 <select
                   value={sort}
@@ -257,7 +257,7 @@ export function CustomerCatalogPage() {
                     setSort(e.target.value)
                     setPage(1)
                   }}
-                  className="bg-transparent font-medium text-slate-700 focus:outline-none"
+                  className="bg-transparent font-medium text-slate-700 focus:outline-none dark:text-slate-300"
                 >
                   <option value="name">Name (A â†’ Z)</option>
                   <option value="-name">Name (Z â†’ A)</option>
@@ -270,8 +270,8 @@ export function CustomerCatalogPage() {
           </div>
 
           {/* Category Chips */}
-          <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-3">
-            <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
+          <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-3 dark:border-zinc-800">
+            <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1 dark:text-slate-500">
               <Filter className="h-3 w-3" /> Categories:
             </span>
             <button
@@ -282,8 +282,8 @@ export function CustomerCatalogPage() {
               }}
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 selectedCategory === null
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-black"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-zinc-800 dark:text-slate-300 dark:hover:bg-zinc-700"
               }`}
             >
               All Items
@@ -299,7 +299,7 @@ export function CustomerCatalogPage() {
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                   selectedCategory === cat.id
                     ? "bg-sky-600 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-zinc-800 dark:text-slate-300 dark:hover:bg-zinc-700"
                 }`}
               >
                 <span>{cat.name}</span>
@@ -347,10 +347,10 @@ export function CustomerCatalogPage() {
                 return (
                   <div
                     key={product.id}
-                    className="card group flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                    className="card group flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-md dark:bg-zinc-950 dark:border-zinc-800"
                   >
                     {/* Product Image Area */}
-                    <div className="relative aspect-4/3 w-full bg-slate-100">
+                    <div className="relative aspect-4/3 w-full bg-slate-100 dark:bg-zinc-900">
                       {product.image_url ? (
                         <img
                           src={product.image_url}
@@ -383,7 +383,7 @@ export function CustomerCatalogPage() {
                       {/* Category Label */}
                       {product.category_name ? (
                         <div className="absolute bottom-2 right-2">
-                          <span className="rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-xs backdrop-blur-xs">
+                          <span className="rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-medium text-slate-700 shadow-xs backdrop-blur-xs dark:bg-zinc-900/90 dark:text-slate-300">
                             {product.category_name}
                           </span>
                         </div>
@@ -392,27 +392,27 @@ export function CustomerCatalogPage() {
 
                     {/* Card Body */}
                     <div className="flex flex-1 flex-col p-4">
-                      <span className="text-[11px] font-mono text-slate-400">
+                      <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
                         SKU: {product.sku_code}
                       </span>
-                      <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-sky-600">
+                      <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-sky-600 dark:text-white dark:group-hover:text-emerald-400">
                         {product.name}
                       </h3>
 
                       {product.description ? (
-                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                        <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">
                           {product.description}
                         </p>
                       ) : null}
 
                       {/* Price & Action */}
                       <div className="mt-auto pt-3">
-                        <div className="flex items-baseline justify-between border-t border-slate-100 pt-2">
+                        <div className="flex items-baseline justify-between border-t border-slate-100 pt-2 dark:border-zinc-800">
                           <div>
-                            <span className="text-[10px] uppercase tracking-wider text-slate-400">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                               Retail Price
                             </span>
-                            <p className="text-lg font-extrabold text-slate-900">
+                            <p className="text-lg font-extrabold text-slate-900 dark:text-emerald-400">
                               {money(product.selling_price)}
                             </p>
                           </div>
@@ -658,6 +658,9 @@ export function CustomerCatalogPage() {
     </div>
   )
 }
+
+
+
 
 
 

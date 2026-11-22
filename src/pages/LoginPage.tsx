@@ -79,7 +79,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 p-4 text-slate-100">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-black p-4 text-slate-100">
 
       {/* Top navigation */}
       <div className="mb-6 flex w-full max-w-sm items-center justify-between text-xs">
@@ -98,7 +98,7 @@ export function LoginPage() {
         </Link>
       </div>
 
-      <div className="w-full max-w-sm rounded-xl border border-slate-700 bg-slate-800/50 p-6 shadow-xl sm:p-7">
+      <div className="w-full max-w-sm rounded-xl border border-slate-700 bg-zinc-950 p-6 shadow-xl sm:p-7">
 
         {/* Brand Header */}
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
@@ -115,7 +115,7 @@ export function LoginPage() {
         </div>
 
         {/* Role Toggle */}
-        <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-slate-900/80 p-1 border border-slate-700 text-xs">
+        <div className="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-black/80 p-1 border border-slate-700 text-xs">
           <button
             type="button"
             onClick={() => { setSelectedRole("admin"); setInlineError(null) }}
@@ -149,7 +149,7 @@ export function LoginPage() {
               Username
             </label>
             <input
-              className={`w-full rounded-lg border px-3 py-2.5 text-sm text-white placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-2 transition ${
+              className={`w-full rounded-lg border px-3 py-2.5 text-sm text-white placeholder-slate-500 bg-zinc-950 focus:outline-none focus:ring-2 transition ${
                 inlineError
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                   : "border-slate-600 focus:border-emerald-500 focus:ring-emerald-500/20"
@@ -168,7 +168,7 @@ export function LoginPage() {
             </label>
             <input
               type="password"
-              className={`w-full rounded-lg border px-3 py-2.5 text-sm text-white placeholder-slate-500 bg-slate-800 focus:outline-none focus:ring-2 transition ${
+              className={`w-full rounded-lg border px-3 py-2.5 text-sm text-white placeholder-slate-500 bg-zinc-950 focus:outline-none focus:ring-2 transition ${
                 inlineError
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                   : "border-slate-600 focus:border-emerald-500 focus:ring-emerald-500/20"
@@ -200,4 +200,5 @@ export function LoginPage() {
     </div>
   )
 }
+
 

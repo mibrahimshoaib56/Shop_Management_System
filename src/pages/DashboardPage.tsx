@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+﻿import { useQuery } from "@tanstack/react-query"
 import {
   AlertTriangle,
   BookOpen,
@@ -69,7 +69,7 @@ export function DashboardPage() {
     queryFn: async () => (await api.get<KhataSummary>("/customers/summary")).data,
   })
 
-  if (statsQuery.isLoading) return <Spinner label="Loading dashboard…" />
+  if (statsQuery.isLoading) return <Spinner label="Loading dashboardâ€¦" />
   if (statsQuery.isError || !statsQuery.data) {
     return <ErrorPanel onRetry={() => statsQuery.refetch()} />
   }
@@ -105,7 +105,7 @@ export function DashboardPage() {
 
       <div className="card p-4">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-900">Sales &amp; Profit Trend</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Sales &amp; Profit Trend</h2>
           <div className="flex gap-1">
             {GROUPS.map((g) => (
               <button
@@ -114,8 +114,8 @@ export function DashboardPage() {
                 onClick={() => setGroup(g)}
                 className={
                   g === group
-                    ? "rounded-lg bg-slate-900 px-3 py-1 text-xs font-medium text-white capitalize"
-                    : "rounded-lg px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 capitalize"
+                    ? "rounded-lg bg-slate-900 px-3 py-1 text-xs font-medium text-white capitalize dark:bg-white dark:text-black"
+                    : "rounded-lg px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 capitalize dark:text-slate-300 dark:hover:bg-zinc-800"
                 }
               >
                 {g === "day" ? "Daily" : g === "week" ? "Weekly" : "Monthly"}
@@ -141,13 +141,13 @@ export function DashboardPage() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <p className="py-10 text-center text-sm text-slate-500">No sales in the selected range.</p>
+          <p className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">No sales in the selected range.</p>
         )}
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="card p-4">
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Top 5 Best-Selling Products</h2>
+          <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">Top 5 Best-Selling Products</h2>
           {topProductsQuery.isLoading ? (
             <Spinner />
           ) : topProductsQuery.data && topProductsQuery.data.length > 0 ? (
@@ -161,12 +161,12 @@ export function DashboardPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="py-10 text-center text-sm text-slate-500">No sales data yet.</p>
+            <p className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">No sales data yet.</p>
           )}
         </div>
 
         <div className="card p-4">
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Category Revenue Contribution</h2>
+          <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">Category Revenue Contribution</h2>
           {categoryRevenueQuery.isLoading ? (
             <Spinner />
           ) : categoryRevenueQuery.data && categoryRevenueQuery.data.length > 0 ? (
@@ -191,7 +191,7 @@ export function DashboardPage() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p className="py-10 text-center text-sm text-slate-500">No category revenue yet.</p>
+            <p className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">No category revenue yet.</p>
           )}
         </div>
       </div>
@@ -199,3 +199,4 @@ export function DashboardPage() {
   </RoleGate>
 )
 }
+

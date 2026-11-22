@@ -70,12 +70,6 @@ export function LandingPage() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         <div className="mx-auto w-full max-w-4xl text-center">
 
-          {/* Badge */}
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-800 bg-emerald-950/60 px-4 py-1.5 text-xs font-medium text-emerald-400">
-            <Zap className="h-3.5 w-3.5" />
-            Smart Shop & Inventory Management
-          </div>
-
           {/* Headline */}
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
             Welcome to{" "}
@@ -120,4 +114,5 @@ export function LandingPage() {
     </div>
   )
 }
+
 
