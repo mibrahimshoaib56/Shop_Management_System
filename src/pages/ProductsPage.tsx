@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AlertOctagon, Archive, ClipboardList, MessageCircle, Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -145,7 +145,7 @@ function ProductFormModal({
   }
 
   return (
-    <Modal open={open} title={editing ? `Edit Product — ${editing.sku_code}` : "New Product"} onClose={onClose} wide>
+    <Modal open={open} title={editing ? `Edit Product â€” ${editing.sku_code}` : "New Product"} onClose={onClose} wide>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="SKU Code">
           <input className="input-field" value={form.sku_code} disabled={!!editing} onChange={(e) => set("sku_code")(e.target.value)} />
@@ -155,7 +155,7 @@ function ProductFormModal({
         </FormField>
         <FormField label="Category">
           <select className="input-field" value={form.category_id} onChange={(e) => set("category_id")(e.target.value)}>
-            <option value="">Select…</option>
+            <option value="">Selectâ€¦</option>
             {categoriesQuery.data?.items.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -183,7 +183,7 @@ function ProductFormModal({
         </FormField>
         <div className="sm:col-span-2">
           <FormField label="Image URL" hint="Paste an http(s) link to a product photo.">
-            <input className="input-field" placeholder="https://…" value={form.image_url} onChange={(e) => set("image_url")(e.target.value)} />
+            <input className="input-field" placeholder="https://â€¦" value={form.image_url} onChange={(e) => set("image_url")(e.target.value)} />
           </FormField>
         </div>
         <div className="sm:col-span-2">
@@ -197,7 +197,7 @@ function ProductFormModal({
       <div className="mt-5 flex justify-end gap-2 border-t border-slate-200 pt-4">
         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
         <button type="button" className="btn-primary" onClick={submit} disabled={saveMutation.isPending}>
-          {saveMutation.isPending ? "Saving…" : editing ? "Save Changes" : "Create Product"}
+          {saveMutation.isPending ? "Savingâ€¦" : editing ? "Save Changes" : "Create Product"}
         </button>
       </div>
     </Modal>
@@ -254,11 +254,11 @@ function AdjustStockModal({
     <Modal open title="Write Off Stock (Damaged / Expired)" onClose={onClose}>
       <div className="space-y-4 text-xs">
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <p className="text-sm font-semibold text-slate-900">{product.name}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">{product.name}</p>
           <p className="mt-0.5 font-mono text-slate-500">SKU: {product.sku_code}</p>
           <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2">
             <span className="text-slate-600">Current Stock:</span>
-            <span className="font-bold text-slate-900">{product.current_stock} units</span>
+            <span className="font-bold text-slate-900 dark:text-white">{product.current_stock} units</span>
           </div>
         </div>
 
@@ -302,7 +302,7 @@ function AdjustStockModal({
           <label className="mb-1 block font-semibold text-slate-700">Audit Notes (Optional)</label>
           <input
             className="input-field"
-            placeholder="e.g. Broken in transit, expired batch #492…"
+            placeholder="e.g. Broken in transit, expired batch #492â€¦"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -329,7 +329,7 @@ function AdjustStockModal({
             onClick={() => adjustMutation.mutate()}
           >
             <AlertOctagon className="h-4 w-4" />
-            <span>{adjustMutation.isPending ? "Adjusting…" : "Confirm Write Off"}</span>
+            <span>{adjustMutation.isPending ? "Adjustingâ€¦" : "Confirm Write Off"}</span>
           </button>
         </div>
       </div>
@@ -383,7 +383,7 @@ function StockAdjustmentsHistoryModal({ onClose }: { onClose: () => void }) {
                   <tr key={adj.id}>
                     <td className="td py-2 whitespace-nowrap text-slate-500">{formatDate(adj.created_at)}</td>
                     <td className="td py-2">
-                      <p className="font-medium text-slate-900">{adj.product_name ?? `#${adj.product_id}`}</p>
+                      <p className="font-medium text-slate-900 dark:text-white">{adj.product_name ?? `#${adj.product_id}`}</p>
                       <p className="font-mono text-[11px] text-slate-400">{adj.product_sku ?? "-"}</p>
                     </td>
                     <td className="td py-2 text-right font-bold text-rose-600">-{adj.quantity}</td>
@@ -393,7 +393,7 @@ function StockAdjustmentsHistoryModal({ onClose }: { onClose: () => void }) {
                       </span>
                     </td>
                     {isAdmin && (
-                      <td className="td py-2 text-right font-medium text-slate-900">
+                      <td className="td py-2 text-right font-medium text-slate-900 dark:text-white">
                         {money(adj.total_loss)}
                       </td>
                     )}
@@ -505,7 +505,7 @@ function ProductsTable() {
     <div className="space-y-4">
       <div className="card flex flex-wrap items-center gap-3 p-3">
         <div className="min-w-[220px] flex-1">
-          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search by name or SKU…" />
+          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search by name or SKUâ€¦" />
         </div>
         <select className="input-field w-44" value={categoryId} onChange={(e) => { setCategoryId(e.target.value); setPage(1) }}>
           <option value="">All categories</option>
@@ -576,7 +576,7 @@ function ProductsTable() {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium text-slate-900">{product.name}</p>
+                        <p className="font-medium text-slate-900 dark:text-white">{product.name}</p>
                         <p className="text-xs text-slate-500">{product.sku_code}</p>
                       </div>
                     </div>
@@ -675,7 +675,7 @@ function ProductsTable() {
         >
           <div className="space-y-3">
             <p className="text-sm text-slate-600">
-              Generate a restock request for <strong className="text-slate-900">{reorderProduct.name}</strong> (SKU: {reorderProduct.sku_code}).
+              Generate a restock request for <strong className="text-slate-900 dark:text-white">{reorderProduct.name}</strong> (SKU: {reorderProduct.sku_code}).
             </p>
             <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600 border border-slate-200">
               <p>Current Stock: <strong className="text-amber-700">{reorderProduct.current_stock} units</strong></p>
@@ -746,3 +746,4 @@ function ProductsTable() {
 export function ProductsPage() {
   return <ProductsTable />
 }
+

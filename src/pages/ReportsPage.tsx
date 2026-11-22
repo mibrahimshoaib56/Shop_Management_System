@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+﻿import { useMutation } from "@tanstack/react-query"
 import { FileDown } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -53,7 +53,7 @@ export function ReportsPage() {
   return (
     <RoleGate>
       <div className="mx-auto max-w-xl space-y-5">
-        <h1 className="text-lg font-semibold text-slate-900">Reports &amp; Exports</h1>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Reports &amp; Exports</h1>
 
         <div className="card space-y-4 p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -88,7 +88,7 @@ export function ReportsPage() {
             onClick={() => exportMutation.mutate()}
           >
             <FileDown className="h-4 w-4" />
-            {exportMutation.isPending ? "Generating…" : "Generate & Download"}
+            {exportMutation.isPending ? "Generatingâ€¦" : "Generate & Download"}
           </button>
 
           <p className="text-center text-xs text-slate-400">
@@ -99,3 +99,4 @@ export function ReportsPage() {
     </RoleGate>
   )
 }
+

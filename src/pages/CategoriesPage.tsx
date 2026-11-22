@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
@@ -78,7 +78,7 @@ function CategoryModal({
           disabled={saveMutation.isPending || !form.name.trim()}
           onClick={() => saveMutation.mutate()}
         >
-          {saveMutation.isPending ? "Saving…" : "Save"}
+          {saveMutation.isPending ? "Savingâ€¦" : "Save"}
         </button>
       </div>
     </Modal>
@@ -116,9 +116,9 @@ function CategoriesTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold text-slate-900">Categories</h1>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Categories</h1>
         <div className="ml-auto flex w-full max-w-xs items-center gap-2">
-          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search categories…" />
+          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search categoriesâ€¦" />
         </div>
         <button
           type="button"
@@ -207,3 +207,4 @@ export function CategoriesPage() {
     </RoleGate>
   )
 }
+

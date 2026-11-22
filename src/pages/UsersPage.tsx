@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Pencil, Plus, UserX } from "lucide-react"
 import { useState } from "react"
 
@@ -74,7 +74,7 @@ function UserModal({
   }
 
   return (
-    <Modal open={open} title={editing ? `Edit User — ${editing.username}` : "New User"} onClose={onClose}>
+    <Modal open={open} title={editing ? `Edit User â€” ${editing.username}` : "New User"} onClose={onClose}>
       <div className="space-y-4">
         <FormField label="Username">
           <input className="input-field" value={form.username} disabled={!!editing}
@@ -104,7 +104,7 @@ function UserModal({
       <div className="mt-5 flex justify-end gap-2 border-t border-slate-200 pt-4">
         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
         <button type="button" className="btn-primary" onClick={submit} disabled={saveMutation.isPending}>
-          {saveMutation.isPending ? "Saving…" : "Save"}
+          {saveMutation.isPending ? "Savingâ€¦" : "Save"}
         </button>
       </div>
     </Modal>
@@ -137,7 +137,7 @@ function UsersTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-slate-900">User Management</h1>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-white">User Management</h1>
         <button
           type="button"
           className="btn-primary"
@@ -241,3 +241,4 @@ export function UsersPage() {
     </RoleGate>
   )
 }
+
