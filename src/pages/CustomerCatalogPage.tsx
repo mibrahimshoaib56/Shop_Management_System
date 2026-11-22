@@ -9,12 +9,14 @@ import {
   Layers,
   LogIn,
   MessageCircle,
+  Moon,
   Package,
   Phone,
   RefreshCw,
   Search,
   ShoppingBag,
   Sparkles,
+  Sun,
   X,
   XCircle,
 } from "lucide-react"
@@ -30,10 +32,13 @@ import { api } from "@/lib/api"
 import { downloadBlobResponse } from "@/lib/file"
 import { money } from "@/lib/format"
 import { useAuthStore } from "@/stores/authStore"
+import { useUiStore } from "@/stores/uiStore"
 
 export function CustomerCatalogPage() {
   const token = useAuthStore((state) => state.token)
   const user = useAuthStore((state) => state.user)
+  const darkMode = useUiStore((state) => state.darkMode)
+  const toggleDarkMode = useUiStore((state) => state.toggleDarkMode)
 
   // Filters state
   const [search, setSearch] = useState("")
@@ -134,20 +139,27 @@ export function CustomerCatalogPage() {
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs dark:border-zinc-800 dark:bg-black/95">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-3 transition hover:opacity-90">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md">
               <ShoppingBag className="h-5 w-5" />
             </div>
             <div>
               <h1 className="text-base font-bold text-slate-900 sm:text-lg dark:text-white">
                 MIGOS ENTERPRISE
               </h1>
-              <p className="hidden text-xs text-slate-500 sm:block dark:text-slate-400">
-                Digital Catalog & Customer Portal
-              </p>
             </div>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Dark mode toggle */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-zinc-800"
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+
             {/* Find My Bills Button */}
             <button
               type="button"
@@ -190,34 +202,6 @@ export function CustomerCatalogPage() {
           </div>
         </div>
       </header>
-
-      {/* Hero Welcome Banner */}
-      <section className="px-4 py-6 sm:px-6">
-        <div className="mx-auto max-w-7xl"><div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 px-6 py-7 text-white shadow-lg sm:px-8 sm:py-8">
-          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-            <div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/20 px-3 py-1 text-xs font-medium text-sky-300 ring-1 ring-sky-500/30">
-                <Sparkles className="h-3.5 w-3.5" /> Live Store Inventory
-              </span>
-              <h2 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
-                Browse Products &amp; Prices
-              </h2>
-              <p className="mt-1 max-w-2xl text-sm text-slate-300 sm:text-base">
-                Check item availability in real-time, view up-to-date retail prices, or look up your past purchase receipts anytime.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsInvoiceModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 px-5 py-3 font-medium text-white shadow-lg shadow-sky-500/20 transition hover:opacity-95"
-            >
-              <FileText className="h-5 w-5" />
-              <span>Lookup Your Bill / Receipt</span>
-            </button>
-          </div>
-        </div></div>
-      </section>
 
       {/* Main Catalog Section */}
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -674,5 +658,9 @@ export function CustomerCatalogPage() {
     </div>
   )
 }
+
+
+
+
 
 
