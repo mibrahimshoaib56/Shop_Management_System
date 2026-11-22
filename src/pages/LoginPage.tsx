@@ -1,5 +1,5 @@
 ﻿import { useMutation } from "@tanstack/react-query"
-import { ArrowLeft, ShieldCheck, ShoppingCart, ShoppingBag } from "lucide-react"
+import { ArrowLeft, Moon, ShieldCheck, ShoppingCart, ShoppingBag, Sun } from "lucide-react"
 import { useState } from "react"
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
 
@@ -7,6 +7,7 @@ import type { AuthResponse } from "@/types/api"
 
 import { api } from "@/lib/api"
 import { useAuthStore } from "@/stores/authStore"
+import { useUiStore } from "@/stores/uiStore"
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -14,6 +15,8 @@ export function LoginPage() {
   const token = useAuthStore((state) => state.token)
   const currentUser = useAuthStore((state) => state.user)
   const setSession = useAuthStore((state) => state.setSession)
+  const darkMode = useUiStore((state) => state.darkMode)
+  const toggleDarkMode = useUiStore((state) => state.toggleDarkMode)
 
   const initialRole = searchParams.get("role") === "cashier" ? "cashier" : "admin"
   const [selectedRole, setSelectedRole] = useState<"admin" | "cashier">(initialRole)
@@ -79,7 +82,26 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-black p-4 text-slate-100">
+    <div className="flex min-h-screen flex-col bg-black text-slate-100">
+      {/* ── Header ── */}
+      <header className="flex h-14 items-center justify-between border-b border-zinc-800 bg-black px-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
+            <ShoppingBag className="h-4 w-4" />
+          </div>
+          <span className="text-sm font-bold text-white">MIGOS ENTERPRISE</span>
+        </div>
+        <button
+          type="button"
+          onClick={toggleDarkMode}
+          className="rounded-lg p-2 text-slate-400 hover:bg-zinc-900 hover:text-white"
+          title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
+      </header>
+
+      <div className="flex flex-1 flex-col items-center justify-center p-4">
 
       {/* Top navigation */}
       <div className="mb-6 flex w-full max-w-sm items-center justify-between text-xs">
@@ -197,8 +219,12 @@ export function LoginPage() {
           </button>
         </form>
       </div>
+      </div>
     </div>
   )
 }
+
+
+
 
 
