@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CheckCircle2, Printer, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -125,12 +125,12 @@ function RefundModal({
   })
 
   return (
-    <Modal open title={`Process Return / Refund — ${sale.transaction_code}`} onClose={onClose} wide>
+    <Modal open title={`Process Return / Refund â€” ${sale.transaction_code}`} onClose={onClose} wide>
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span className="font-semibold text-slate-900">{sale.customer_name || "Walk-in Customer"}</span> ·{" "}
+              <span className="font-semibold text-slate-900">{sale.customer_name || "Walk-in Customer"}</span> Â·{" "}
               <span>Original Total: {money(sale.total_revenue)}</span>
             </div>
             <span className="font-medium text-slate-500">Method: {sale.payment_method || "Cash"}</span>
@@ -236,7 +236,7 @@ function RefundModal({
           </div>
           <input
             className="input-field text-xs"
-            placeholder="Or type custom return notes/reason…"
+            placeholder="Or type custom return notes/reasonâ€¦"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
           />
@@ -258,7 +258,7 @@ function RefundModal({
               onClick={() => refundMutation.mutate()}
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              <span>{refundMutation.isPending ? "Processing…" : "Confirm Refund & Restore Stock"}</span>
+              <span>{refundMutation.isPending ? "Processingâ€¦" : "Confirm Refund & Restore Stock"}</span>
             </button>
           </div>
         </div>
@@ -469,8 +469,8 @@ export function SalesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-slate-900">Sales History</h1>
-        <span className="text-xs text-slate-500">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Sales History</h1>
+        <span className="text-xs text-slate-500 dark:text-slate-400">
           Click any transaction to view line items, print receipt, or process customer returns.
         </span>
       </div>
@@ -483,7 +483,7 @@ export function SalesPage() {
               setQ(v)
               setPage(1)
             }}
-            placeholder="Search by transaction code or customer…"
+            placeholder="Search by transaction code or customerâ€¦"
           />
         </div>
         <input
@@ -516,7 +516,7 @@ export function SalesPage() {
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[720px]">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-slate-200 bg-slate-50 dark:border-zinc-700 dark:bg-zinc-900">
               <tr>
                 <th className="th">Transaction</th>
                 <th className="th">Date</th>
@@ -527,25 +527,25 @@ export function SalesPage() {
                 <th className="th text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
               {salesQuery.data.items.map((sale) => (
                 <tr
                   key={sale.id}
-                  className="cursor-pointer hover:bg-sky-50 transition"
+                  className="cursor-pointer hover:bg-sky-50 transition dark:hover:bg-zinc-800"
                   onClick={() => setSelectedSaleId(sale.id)}
                 >
-                  <td className="td font-medium text-slate-900">{sale.transaction_code}</td>
-                  <td className="td whitespace-nowrap text-slate-500">{formatDate(sale.sale_date)}</td>
+                  <td className="td font-medium text-slate-900 dark:text-white">{sale.transaction_code}</td>
+                  <td className="td whitespace-nowrap text-slate-500 dark:text-slate-400">{formatDate(sale.sale_date)}</td>
                   <td className="td">{sale.customer_name ?? "Walk-in Customer"}</td>
                   <td className="td">
                     <StatusBadge status={sale.status} refundAmount={sale.refund_amount} />
                   </td>
                   <td className="td text-right font-medium">{money(sale.total_revenue)}</td>
-                  {isAdmin ? <td className="td text-right text-emerald-700">{money(sale.total_profit)}</td> : null}
+                  {isAdmin ? <td className="td text-right text-emerald-700 dark:text-emerald-400">{money(sale.total_profit)}</td> : null}
                   <td className="td text-right">
                     <button
                       type="button"
-                      className="rounded-md px-2 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-100"
+                      className="rounded-md px-2 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-100 dark:text-sky-400 dark:hover:bg-zinc-700"
                       onClick={(event) => {
                         event.stopPropagation()
                         setSelectedSaleId(sale.id)
@@ -574,3 +574,4 @@ export function SalesPage() {
     </div>
   )
 }
+

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   AlertCircle,
   BookOpen,
@@ -193,11 +193,11 @@ export function CustomersPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2 dark:text-white">
             <BookOpen className="h-6 w-6 text-sky-600" />
             Customers &amp; Khata (Udhaar) Ledger
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5 dark:text-slate-400">
             Manage regular clients, track credit (Udhaar) balances, view transaction history, and send WhatsApp payment reminders.
           </p>
         </div>
@@ -218,8 +218,8 @@ export function CustomersPage() {
             <Users className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-500">Total Registered Customers</p>
-            <p className="text-2xl font-bold text-slate-900">
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Registered Customers</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">
               {summaryQuery.data?.total_customers ?? customersQuery.data?.length ?? 0}
             </p>
           </div>
@@ -230,7 +230,7 @@ export function CustomersPage() {
             <Wallet className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-500">Total Outstanding Udhaar</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Outstanding Udhaar</p>
             <p className="text-2xl font-extrabold text-rose-600">
               {money(summaryQuery.data?.total_outstanding ?? 0)}
             </p>
@@ -242,7 +242,7 @@ export function CustomersPage() {
             <HandCoins className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-500">Customers with Pending Balance</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Customers with Pending Balance</p>
             <p className="text-2xl font-bold text-amber-700">{debtorsCount}</p>
           </div>
         </div>
@@ -255,18 +255,18 @@ export function CustomersPage() {
           <input
             type="search"
             className="input-field pl-9"
-            placeholder="Search by customer name or mobile number…"
+            placeholder="Search by customer name or mobile numberâ€¦"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-1.5 self-end sm:self-auto bg-slate-100 p-1 rounded-lg">
+        <div className="flex items-center gap-1.5 self-end sm:self-auto bg-slate-100 p-1 rounded-lg dark:bg-zinc-900">
           <button
             type="button"
             onClick={() => setFilterBalance("all")}
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-              filterBalance === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+              filterBalance === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
             All ({customersQuery.data?.length ?? 0})
@@ -277,7 +277,7 @@ export function CustomersPage() {
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${
               filterBalance === "debtors"
                 ? "bg-rose-500 text-white shadow-xs font-semibold"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
             Has Udhaar ({debtorsCount})
@@ -286,7 +286,7 @@ export function CustomersPage() {
             type="button"
             onClick={() => setFilterBalance("clear")}
             className={`rounded-md px-3 py-1 text-xs font-medium transition ${
-              filterBalance === "clear" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+              filterBalance === "clear" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
             Settled (Rs. 0)
@@ -307,7 +307,7 @@ export function CustomersPage() {
       ) : (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[750px]">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-400">
               <tr>
                 <th className="th">Customer</th>
                 <th className="th">Mobile Number</th>
@@ -316,18 +316,18 @@ export function CustomersPage() {
                 <th className="th text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-slate-100 text-sm dark:divide-zinc-800">
               {filteredCustomers.map((cust) => {
                 const bal = Number(cust.outstanding_balance)
                 return (
-                  <tr key={cust.id} className="hover:bg-slate-50 transition">
+                  <tr key={cust.id} className="hover:bg-slate-50 transition dark:hover:bg-zinc-800">
                     <td className="td">
-                      <div className="font-semibold text-slate-900">{cust.name}</div>
-                      <div className="text-xs text-slate-400">Added {formatDate(cust.created_at)}</div>
+                      <div className="font-semibold text-slate-900 dark:text-white">{cust.name}</div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500">Added {formatDate(cust.created_at)}</div>
                     </td>
                     <td className="td whitespace-nowrap">
                       {cust.phone ? (
-                        <div className="flex items-center gap-1.5 font-mono text-slate-700">
+                        <div className="flex items-center gap-1.5 font-mono text-slate-700 dark:text-slate-300">
                           <Phone className="h-3.5 w-3.5 text-slate-400" />
                           <span>{cust.phone}</span>
                         </div>
@@ -335,8 +335,8 @@ export function CustomersPage() {
                         <span className="text-xs italic text-slate-400">No phone</span>
                       )}
                     </td>
-                    <td className="td max-w-xs truncate text-slate-600">
-                      <div>{cust.address || "—"}</div>
+                    <td className="td max-w-xs truncate text-slate-600 dark:text-slate-300">
+                      <div>{cust.address || "â€”"}</div>
                       {cust.notes && <div className="text-xs italic text-slate-400">{cust.notes}</div>}
                     </td>
                     <td className="td text-right whitespace-nowrap">
@@ -515,7 +515,7 @@ export function CustomersPage() {
                 disabled={saveCustomerMutation.isPending}
                 className="btn-primary text-xs"
               >
-                {saveCustomerMutation.isPending ? "Saving…" : editingCustomer ? "Update Customer" : "Create Customer"}
+                {saveCustomerMutation.isPending ? "Savingâ€¦" : editingCustomer ? "Update Customer" : "Create Customer"}
               </button>
             </div>
           </form>
@@ -526,7 +526,7 @@ export function CustomersPage() {
       {paymentCustomer && (
         <Modal
           open={true}
-          title={`Record Payment — ${paymentCustomer.name}`}
+          title={`Record Payment â€” ${paymentCustomer.name}`}
           onClose={() => setPaymentCustomer(null)}
         >
           <div className="space-y-4">
@@ -597,7 +597,7 @@ export function CustomersPage() {
                 onClick={() => recordPaymentMutation.mutate()}
                 className="btn-primary text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {recordPaymentMutation.isPending ? "Recording…" : "Save Payment (+ Cash In)"}
+                {recordPaymentMutation.isPending ? "Recordingâ€¦" : "Save Payment (+ Cash In)"}
               </button>
             </div>
           </div>
@@ -680,7 +680,7 @@ function LedgerModal({
         {/* Quick Action buttons */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div className="text-xs text-slate-500">
-            {customer.phone && <span className="font-mono">{customer.phone} · </span>}
+            {customer.phone && <span className="font-mono">{customer.phone} Â· </span>}
             {customer.address || "No address specified"}
           </div>
           <div className="flex items-center gap-2">
@@ -725,7 +725,7 @@ function LedgerModal({
                 {entries.map((entry) => {
                   const isCredit = entry.entry_type === "credit"
                   return (
-                    <tr key={entry.id} className="hover:bg-slate-50 transition">
+                    <tr key={entry.id} className="hover:bg-slate-50 transition dark:hover:bg-zinc-800">
                       <td className="py-2.5 px-3 whitespace-nowrap text-slate-500 font-mono">
                         {formatDate(entry.created_at)}
                       </td>
@@ -761,3 +761,4 @@ function LedgerModal({
     </Modal>
   )
 }
+
