@@ -1,10 +1,11 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+﻿import { useMutation, useQuery } from "@tanstack/react-query"
 import {
   BookOpen,
   FileBarChart,
   LayoutDashboard,
   LogOut,
   Menu,
+  Moon,
   Package,
   PanelLeftClose,
   PanelLeftOpen,
@@ -12,6 +13,7 @@ import {
   ShoppingCart,
   ShoppingBag,
   Store,
+  Sun,
   Tags,
   Truck,
   Users,
@@ -53,7 +55,9 @@ export function Layout() {
   const user = useAuthStore((state) => state.user)
   const clear = useAuthStore((state) => state.clear)
   const collapsed = useUiStore((state) => state.sidebarCollapsed)
+  const darkMode = useUiStore((state) => state.darkMode)
   const toggleSidebar = useUiStore((state) => state.toggleSidebar)
+  const toggleDarkMode = useUiStore((state) => state.toggleDarkMode)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const dashboardQuery = useQuery({
@@ -83,7 +87,9 @@ export function Layout() {
           onClick={onClick}
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-              isActive ? "bg-emerald-50 text-emerald-700" : "text-slate-600 hover:bg-slate-100"
+              isActive
+                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
             }`
           }
           title={collapsed ? item.label : undefined}
@@ -91,7 +97,7 @@ export function Layout() {
           <item.icon className="h-5 w-5 shrink-0" />
           {!collapsed ? <span>{item.label}</span> : null}
           {item.to === "/products" && lowStockCount > 0 && !collapsed ? (
-            <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+            <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
               {lowStockCount}
             </span>
           ) : null}
@@ -101,17 +107,17 @@ export function Layout() {
   )
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-slate-100 dark:bg-slate-900">
 
       {/* ── Desktop Sidebar ── */}
       <aside
-        className={`sticky top-0 hidden lg:flex h-screen flex-col border-r border-slate-200 bg-white transition-all ${
+        className={`sticky top-0 hidden lg:flex h-screen flex-col border-r border-slate-200 bg-white transition-all dark:border-slate-700 dark:bg-slate-800 ${
           collapsed ? "w-16" : "w-60"
         }`}
       >
-        <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4">
+        <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4 dark:border-slate-700">
           <ShoppingBag className="h-6 w-6 shrink-0 text-emerald-500" />
-          {!collapsed ? <span className="truncate text-sm font-bold text-slate-900">InventoryXYZ</span> : null}
+          {!collapsed ? <span className="truncate text-sm font-bold text-slate-900 dark:text-white">InventoryXYZ</span> : null}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           <NavLinks />
@@ -119,7 +125,7 @@ export function Layout() {
         <button
           type="button"
           onClick={toggleSidebar}
-          className="flex items-center gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-500 hover:bg-slate-50"
+          className="flex items-center gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700"
         >
           {collapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
           {!collapsed ? <span>Collapse</span> : null}
@@ -129,26 +135,26 @@ export function Layout() {
       {/* ── Mobile Drawer Overlay ── */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden dark:bg-slate-950/70"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* ── Mobile Drawer ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:hidden dark:border-slate-700 dark:bg-slate-800 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4">
+        <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4 dark:border-slate-700">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-6 w-6 text-emerald-500" />
-            <span className="text-sm font-bold text-slate-900">InventoryXYZ</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white">InventoryXYZ</span>
           </div>
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
+            className="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
           >
             <X className="h-5 w-5" />
           </button>
@@ -156,14 +162,14 @@ export function Layout() {
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           <NavLinks onClick={() => setMobileOpen(false)} />
         </nav>
-        <div className="border-t border-slate-200 p-3">
+        <div className="border-t border-slate-200 p-3 dark:border-slate-700">
           <div className="mb-2 px-2">
-            <p className="text-sm font-medium text-slate-900">{user?.full_name ?? user?.username}</p>
-            <p className="text-xs capitalize text-slate-500">{user?.role}</p>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name ?? user?.username}</p>
+            <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user?.role}</p>
           </div>
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             onClick={() => logoutMutation.mutate()}
             disabled={logoutMutation.isPending}
           >
@@ -177,29 +183,39 @@ export function Layout() {
       <div className="flex min-w-0 flex-1 flex-col">
 
         {/* ── Top Header ── */}
-        <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
+        <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-800">
           {/* Mobile menu button */}
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden dark:text-slate-400 dark:hover:bg-slate-700"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </button>
 
-          <p className="hidden text-sm font-medium text-slate-500 lg:block">
+          <p className="hidden text-sm font-medium text-slate-500 lg:block dark:text-slate-400">
             Centralized Shop &amp; Inventory Management
           </p>
-          <p className="text-sm font-bold text-slate-900 lg:hidden">InventoryXYZ</p>
+          <p className="text-sm font-bold text-slate-900 lg:hidden dark:text-white">InventoryXYZ</p>
 
           <div className="flex items-center gap-2 lg:gap-3">
+            {/* Dark mode toggle */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+
             <div className="hidden text-right lg:block">
-              <p className="text-sm font-medium text-slate-900">{user?.full_name ?? user?.username}</p>
-              <p className="text-xs capitalize text-slate-500">{user?.role}</p>
+              <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.full_name ?? user?.username}</p>
+              <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user?.role}</p>
             </div>
             <button
               type="button"
-              className="btn-secondary px-3"
+              className="btn-secondary dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
               onClick={() => logoutMutation.mutate()}
               disabled={logoutMutation.isPending}
             >

@@ -1,11 +1,14 @@
-import { ArrowRight, Building2, ShoppingBag, Store, Zap, Shield, BarChart3 } from "lucide-react"
+﻿import { ArrowRight, Moon, ShoppingBag, Store, Sun, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { useAuthStore } from "@/stores/authStore"
+import { useUiStore } from "@/stores/uiStore"
 
 export function LandingPage() {
   const token = useAuthStore((state) => state.token)
   const user = useAuthStore((state) => state.user)
+  const darkMode = useUiStore((state) => state.darkMode)
+  const toggleDarkMode = useUiStore((state) => state.toggleDarkMode)
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-900 text-slate-100">
@@ -25,6 +28,16 @@ export function LandingPage() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
+            {/* Dark mode toggle */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+
             <Link
               to="/catalog"
               className="hidden sm:inline-flex rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700 hover:text-white"
@@ -68,18 +81,6 @@ export function LandingPage() {
             Welcome to{" "}
             <span className="text-emerald-400">InventoryXYZ</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-slate-400 sm:text-base">
-            Everything your shop needs — billing, stock, Khata ledger, supplier orders, and financial analytics — in one place.
-          </p>
-
-          {/* Feature pills */}
-          <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-slate-400">
-            {["POS Billing", "Khata / Udhaar", "Inventory Tracking", "Supplier Orders", "Sales Reports", "WhatsApp Receipts"].map((f) => (
-              <span key={f} className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1">
-                {f}
-              </span>
-            ))}
-          </div>
 
           {/* ── Customer Storefront Card ── */}
           <div className="mx-auto mt-12 max-w-sm">
@@ -109,21 +110,6 @@ export function LandingPage() {
               Sign in here
             </Link>
           </p>
-        </div>
-
-        {/* ── Feature Cards ── */}
-        <div className="mx-auto mt-20 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            { icon: Zap,       title: "Fast POS Billing",    desc: "Barcode-ready checkout with split payments and instant receipts." },
-            { icon: Shield,    title: "Khata Ledger",        desc: "Track udhaar, record payments, and monitor outstanding balances." },
-            { icon: BarChart3, title: "Financial Analytics", desc: "Real-time revenue, profit, and inventory value at a glance." },
-          ].map((f) => (
-            <div key={f.title} className="rounded-xl border border-slate-800 bg-slate-800/30 p-5">
-              <f.icon className="mb-3 h-5 w-5 text-emerald-400" />
-              <h3 className="text-sm font-semibold text-white">{f.title}</h3>
-              <p className="mt-1 text-xs text-slate-500">{f.desc}</p>
-            </div>
-          ))}
         </div>
       </main>
 

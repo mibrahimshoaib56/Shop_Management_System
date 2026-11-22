@@ -1,10 +1,9 @@
-import { QueryClientProvider } from "@tanstack/react-query"
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
-import { Toaster } from "sonner"
+﻿import { useEffect } from "react"
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 import { Layout } from "@/components/Layout"
 import { ProtectedRoute } from "@/components/ProtectedRoute"
-import { queryClient } from "@/lib/queryClient"
+import { useUiStore } from "@/stores/uiStore"
 import { CategoriesPage } from "@/pages/CategoriesPage"
 import { CustomerCatalogPage } from "@/pages/CustomerCatalogPage"
 import { CustomersPage } from "@/pages/CustomersPage"
@@ -20,39 +19,43 @@ import { SalesPage } from "@/pages/SalesPage"
 import { SuppliersPage } from "@/pages/SuppliersPage"
 import { UsersPage } from "@/pages/UsersPage"
 
+const router = createBrowserRouter([
+  { path: "/", element: <LandingPage /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/catalog", element: <CustomerCatalogPage /> },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { path: "dashboard", element: <DashboardPage /> },
+      { path: "pos", element: <PosPage /> },
+      { path: "sales", element: <SalesPage /> },
+      { path: "customers", element: <CustomersPage /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "categories", element: <CategoriesPage /> },
+      { path: "suppliers", element: <SuppliersPage /> },
+      { path: "purchases", element: <PurchasesPage /> },
+      { path: "reports", element: <ReportsPage /> },
+      { path: "settings/users", element: <UsersPage /> },
+    ],
+  },
+  { path: "*", element: <NotFoundPage /> },
+])
+
 export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {/* 3-Portal Welcome / Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+  const darkMode = useUiStore((state) => state.darkMode)
 
-          {/* Customer Storefront & Public Invoices */}
-          <Route path="/catalog" element={<CustomerCatalogPage />} />
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }, [darkMode])
 
-          {/* Authentication */}
-          <Route path="/login" element={<LoginPage />} />
-
-          {/* Staff Backoffice (Protected) */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/pos" element={<PosPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/categories" element={<CategoriesPage />} />
-              <Route path="/suppliers" element={<SuppliersPage />} />
-              <Route path="/purchases" element={<PurchasesPage />} />
-              <Route path="/sales" element={<SalesPage />} />
-              <Route path="/customers" element={<CustomersPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/settings/users" element={<UsersPage />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <Toaster richColors position="top-right" />
-      </BrowserRouter>
-    </QueryClientProvider>
-  )
+  return <RouterProvider router={router} />
 }

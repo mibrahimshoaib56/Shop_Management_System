@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+﻿import { useMutation } from "@tanstack/react-query"
 import { ArrowLeft, ShieldCheck, ShoppingCart, ShoppingBag } from "lucide-react"
 import { useState } from "react"
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
@@ -29,7 +29,7 @@ export function LoginPage() {
     onSuccess: (data) => {
       // Portal role gate — check if the logged-in role matches selected portal
       if (selectedRole === "admin" && data.user.role !== "admin") {
-        setInlineError("You don't have admin access. Please use the Cashier portal.")
+        setInlineError("You don\'t have admin access. Please use the Cashier portal.")
         return
       }
       if (selectedRole === "cashier" && data.user.role === "admin") {
@@ -94,7 +94,7 @@ export function LoginPage() {
           to="/catalog"
           className="text-slate-400 transition hover:text-slate-200"
         >
-          Customer Storefront →
+          Customer Storefront
         </Link>
       </div>
 
@@ -176,14 +176,14 @@ export function LoginPage() {
               value={password}
               onChange={(e) => { setPassword(e.target.value); setInlineError(null) }}
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder="Enter your password"
             />
           </div>
 
           {/* Inline error message */}
           {inlineError && (
             <div className="flex items-start gap-2 rounded-lg border border-red-800 bg-red-950/60 px-3 py-2.5 text-xs text-red-400">
-              <span className="mt-0.5 shrink-0">⚠</span>
+              <span className="mt-0.5 shrink-0">Warning</span>
               <span>{inlineError}</span>
             </div>
           )}
@@ -193,7 +193,7 @@ export function LoginPage() {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 active:scale-95 disabled:opacity-50"
             disabled={loginMutation.isPending}
           >
-            {loginMutation.isPending ? "Signing In…" : "Sign In"}
+            {loginMutation.isPending ? "Signing In..." : "Sign In"}
           </button>
         </form>
       </div>
