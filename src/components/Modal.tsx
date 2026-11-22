@@ -1,3 +1,4 @@
+import { X } from "lucide-react"
 import type { ReactNode } from "react"
 
 interface ModalProps {
@@ -12,11 +13,11 @@ export function Modal({ open, title, onClose, children, wide = false }: ModalPro
   if (!open) return null
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-16"
+      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-slate-900/50 sm:items-start sm:p-4 sm:pt-16"
       onClick={onClose}
     >
       <div
-        className={`card w-full ${wide ? "max-w-3xl" : "max-w-lg"} p-5`}
+        className={`card w-full rounded-b-none sm:rounded-xl ${wide ? "sm:max-w-3xl" : "sm:max-w-lg"} p-4 sm:p-5 max-h-[92vh] overflow-y-auto`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
@@ -24,9 +25,9 @@ export function Modal({ open, title, onClose, children, wide = false }: ModalPro
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
           >
-            ✕
+            <X className="h-4 w-4" />
           </button>
         </div>
         {children}

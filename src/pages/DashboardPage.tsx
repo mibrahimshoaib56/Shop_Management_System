@@ -78,7 +78,7 @@ export function DashboardPage() {
   return (
     <RoleGate>
       <div className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <StatCard label="Today's Sales" value={money(stats.today_sales)} icon={Receipt} />
         <StatCard
           label="Today's Net Profit"
@@ -126,7 +126,7 @@ export function DashboardPage() {
         {trendsQuery.isLoading ? (
           <Spinner />
         ) : trendsQuery.data && trendsQuery.data.length > 0 ? (
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={220}>
             <LineChart data={trendsQuery.data}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="bucket" tick={{ fontSize: 11 }} tickFormatter={(v: string) => v.slice(5)} />
@@ -151,7 +151,7 @@ export function DashboardPage() {
           {topProductsQuery.isLoading ? (
             <Spinner />
           ) : topProductsQuery.data && topProductsQuery.data.length > 0 ? (
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topProductsQuery.data} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
@@ -170,7 +170,7 @@ export function DashboardPage() {
           {categoryRevenueQuery.isLoading ? (
             <Spinner />
           ) : categoryRevenueQuery.data && categoryRevenueQuery.data.length > 0 ? (
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={categoryRevenueQuery.data}

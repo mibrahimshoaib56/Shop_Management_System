@@ -199,8 +199,8 @@ export function PosPage() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
-      <section className="card flex flex-col p-4 lg:col-span-3">
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
+      <section className="card flex flex-col p-4 xl:col-span-3">
         <div className="relative mb-4">
           <ScanBarcode className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -253,7 +253,7 @@ export function PosPage() {
         </div>
       </section>
 
-      <section className="card flex h-fit flex-col p-4 lg:col-span-2">
+      <section className="card flex h-fit flex-col p-4 xl:col-span-2">
         <div className="mb-3 flex items-center gap-2 border-b border-slate-200 pb-3">
           <ShoppingCart className="h-5 w-5 text-slate-700" />
           <h2 className="text-sm font-semibold text-slate-900">Current Bill</h2>

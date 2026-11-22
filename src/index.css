@@ -2,18 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Smooth scrolling and better touch on mobile */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-slate-900;
+  }
+}
+
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95;
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95;
   }
   .input-field {
     @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200 disabled:bg-slate-100;
+    /* Prevent iOS zoom on focus */
+    font-size: max(16px, 0.875rem);
   }
   .card {
     @apply rounded-xl border border-slate-200 bg-white shadow-sm;
@@ -23,5 +36,14 @@
   }
   .td {
     @apply px-3 py-2 text-sm text-slate-700;
+  }
+  /* Mobile-friendly table wrapper */
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-slate-200;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Touch-friendly minimum tap target */
+  .tap-target {
+    @apply min-h-[44px] min-w-[44px];
   }
 }

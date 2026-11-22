@@ -4,6 +4,7 @@ import {
   FileBarChart,
   LayoutDashboard,
   LogOut,
+  Menu,
   Package,
   PanelLeftClose,
   PanelLeftOpen,
@@ -14,7 +15,9 @@ import {
   Tags,
   Truck,
   Users,
+  X,
 } from "lucide-react"
+import { useState } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -32,17 +35,17 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, adminOnly: true },
-  { to: "/pos", label: "Point of Sale", icon: ShoppingCart },
-  { to: "/sales", label: "Sales History", icon: ReceiptText },
-  { to: "/customers", label: "Customers & Khata", icon: BookOpen },
-  { to: "/products", label: "Products", icon: Package },
-  { to: "/categories", label: "Categories", icon: Tags },
-  { to: "/suppliers", label: "Suppliers", icon: Truck, adminOnly: true },
-  { to: "/purchases", label: "Purchases", icon: ShoppingBag, adminOnly: true },
-  { to: "/reports", label: "Reports", icon: FileBarChart, adminOnly: true },
-  { to: "/settings/users", label: "Users", icon: Users, adminOnly: true },
-  { to: "/catalog", label: "Store Catalog", icon: Store },
+  { to: "/dashboard",      label: "Dashboard",        icon: LayoutDashboard, adminOnly: true },
+  { to: "/pos",            label: "Point of Sale",    icon: ShoppingCart },
+  { to: "/sales",          label: "Sales History",    icon: ReceiptText },
+  { to: "/customers",      label: "Customers & Khata",icon: BookOpen },
+  { to: "/products",       label: "Products",         icon: Package },
+  { to: "/categories",     label: "Categories",       icon: Tags },
+  { to: "/suppliers",      label: "Suppliers",        icon: Truck,          adminOnly: true },
+  { to: "/purchases",      label: "Purchases",        icon: ShoppingBag,    adminOnly: true },
+  { to: "/reports",        label: "Reports",          icon: FileBarChart,   adminOnly: true },
+  { to: "/settings/users", label: "Users",            icon: Users,          adminOnly: true },
+  { to: "/catalog",        label: "Store Catalog",    icon: Store },
 ]
 
 export function Layout() {
@@ -51,6 +54,7 @@ export function Layout() {
   const clear = useAuthStore((state) => state.clear)
   const collapsed = useUiStore((state) => state.sidebarCollapsed)
   const toggleSidebar = useUiStore((state) => state.toggleSidebar)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const dashboardQuery = useQuery({
     queryKey: ["dashboard"],
@@ -60,9 +64,7 @@ export function Layout() {
   const lowStockCount = dashboardQuery.data?.low_stock_count ?? 0
 
   const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await api.post("/auth/logout")
-    },
+    mutationFn: async () => { await api.post("/auth/logout") },
     onSettled: () => {
       clear()
       toast.success("Logged out.")
@@ -70,10 +72,40 @@ export function Layout() {
     },
   })
 
+  const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin")
+
+  const NavLinks = ({ onClick }: { onClick?: () => void }) => (
+    <>
+      {visibleItems.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          onClick={onClick}
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+              isActive ? "bg-sky-50 text-sky-700" : "text-slate-600 hover:bg-slate-100"
+            }`
+          }
+          title={collapsed ? item.label : undefined}
+        >
+          <item.icon className="h-5 w-5 shrink-0" />
+          {!collapsed ? <span>{item.label}</span> : null}
+          {item.to === "/products" && lowStockCount > 0 && !collapsed ? (
+            <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+              {lowStockCount}
+            </span>
+          ) : null}
+        </NavLink>
+      ))}
+    </>
+  )
+
   return (
     <div className="flex min-h-screen bg-slate-100">
+
+      {/* ── Desktop Sidebar ── */}
       <aside
-        className={`sticky top-0 flex h-screen flex-col border-r border-slate-200 bg-white transition-all ${
+        className={`sticky top-0 hidden lg:flex h-screen flex-col border-r border-slate-200 bg-white transition-all ${
           collapsed ? "w-16" : "w-60"
         }`}
       >
@@ -82,26 +114,7 @@ export function Layout() {
           {!collapsed ? <span className="truncate text-sm font-bold text-slate-900">Shop Manager</span> : null}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
-          {NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin").map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  isActive ? "bg-sky-50 text-sky-700" : "text-slate-600 hover:bg-slate-100"
-                }`
-              }
-              title={collapsed ? item.label : undefined}
-            >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {!collapsed ? <span>{item.label}</span> : null}
-              {item.to === "/products" && lowStockCount > 0 && !collapsed ? (
-                <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                  {lowStockCount}
-                </span>
-              ) : null}
-            </NavLink>
-          ))}
+          <NavLinks />
         </nav>
         <button
           type="button"
@@ -113,11 +126,74 @@ export function Layout() {
         </button>
       </aside>
 
+      {/* ── Mobile Drawer Overlay ── */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile Drawer ── */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:hidden ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-6 w-6 text-sky-600" />
+            <span className="text-sm font-bold text-slate-900">Shop Manager</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+          <NavLinks onClick={() => setMobileOpen(false)} />
+        </nav>
+        <div className="border-t border-slate-200 p-3">
+          <div className="mb-2 px-2">
+            <p className="text-sm font-medium text-slate-900">{user?.full_name ?? user?.username}</p>
+            <p className="text-xs capitalize text-slate-500">{user?.role}</p>
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main Content ── */}
       <div className="flex min-w-0 flex-1 flex-col">
+
+        {/* ── Top Header ── */}
         <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
-          <p className="text-sm font-medium text-slate-500">Centralized Shop &amp; Inventory Management</p>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+
+          <p className="hidden text-sm font-medium text-slate-500 lg:block">
+            Centralized Shop &amp; Inventory Management
+          </p>
+          <p className="text-sm font-bold text-slate-900 lg:hidden">Shop Manager</p>
+
+          <div className="flex items-center gap-2 lg:gap-3">
+            <div className="hidden text-right lg:block">
               <p className="text-sm font-medium text-slate-900">{user?.full_name ?? user?.username}</p>
               <p className="text-xs capitalize text-slate-500">{user?.role}</p>
             </div>
@@ -128,11 +204,12 @@ export function Layout() {
               disabled={logoutMutation.isPending}
             >
               <LogOut className="h-4 w-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-x-hidden p-5">
+
+        <main className="flex-1 overflow-x-hidden p-3 sm:p-5">
           <Outlet />
         </main>
       </div>
