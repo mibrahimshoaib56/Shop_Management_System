@@ -89,7 +89,7 @@ export function Layout() {
             `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
               isActive
                 ? "bg-emerald-900/30 text-emerald-400"
-                : "text-slate-300 hover:bg-zinc-900 hover:text-white"
+                : "text-white hover:bg-zinc-900"
             }`
           }
           title={collapsed ? item.label : undefined}
@@ -232,6 +232,7 @@ export function Layout() {
     </div>
   )
 }
+
 
 
 
