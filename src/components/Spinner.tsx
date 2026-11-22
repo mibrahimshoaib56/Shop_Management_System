@@ -9,9 +9,10 @@ export function Spinner({ label }: { label?: string }) {
         autoplay
         loop
         src={loaderAnimation as object}
-        style={{ width: 100, height: 100 }}
+        style={{ width: 250, height: 250 }}
       />
       {label ? <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span> : null}
     </div>
   )
 }
+
