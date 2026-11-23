@@ -104,7 +104,7 @@ function UserModal({
       <div className="mt-5 flex justify-end gap-2 border-t border-slate-200 pt-4">
         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
         <button type="button" className="btn-primary" onClick={submit} disabled={saveMutation.isPending}>
-          {saveMutation.isPending ? "Savingâ€¦" : "Save"}
+          {saveMutation.isPending ? "Saving..." : "Save"}
         </button>
       </div>
     </Modal>

@@ -1,4 +1,4 @@
-﻿import { useQuery } from "@tanstack/react-query"
+﻿﻿import { useQuery } from "@tanstack/react-query"
 import {
   ArrowUpDown,
   Building2,
@@ -214,7 +214,7 @@ export function CustomerCatalogPage() {
               <input
                 type="search"
                 className="input-field pl-9 pr-8"
-                placeholder="Search products by title or SKU codeâ€¦"
+                placeholder="Search products by title or SKU code..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)
@@ -560,7 +560,7 @@ export function CustomerCatalogPage() {
                                 </span>
                               </div>
                               <p className="mt-0.5 text-xs text-slate-500">
-                                {invoice.customer_name || "Customer"} Â· {invoice.items.length} items
+                                {invoice.customer_name || "Customer"} . {invoice.items.length} items
                               </p>
                             </div>
 

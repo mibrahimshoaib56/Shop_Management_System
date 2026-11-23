@@ -78,7 +78,7 @@ function SupplierModal({
           disabled={saveMutation.isPending || !form.name.trim()}
           onClick={() => saveMutation.mutate()}
         >
-          {saveMutation.isPending ? "Savingâ€¦" : "Save"}
+          {saveMutation.isPending ? "Saving..." : "Save"}
         </button>
       </div>
     </Modal>
@@ -117,7 +117,7 @@ function SuppliersTable() {
       <div className="flex items-center gap-3">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Suppliers</h1>
         <div className="ml-auto w-full max-w-xs">
-          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search suppliersâ€¦" />
+          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search suppliers..." />
         </div>
         <button
           type="button"

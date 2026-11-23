@@ -1,4 +1,4 @@
-interface PaginationProps {
+﻿interface PaginationProps {
   page: number
   pages: number
   total: number
@@ -17,7 +17,7 @@ export function Pagination({ page, pages, total, onChange }: PaginationProps) {
   return (
     <div className="flex items-center justify-between py-2">
       <p className="text-xs text-slate-500">
-        Page {page} of {pages} · {total} records
+        Page {page} of {pages} . {total} records
       </p>
       <div className="flex items-center gap-1">
         <button type="button" className="btn-secondary px-2 py-1" disabled={page <= 1} onClick={() => onChange(page - 1)}>

@@ -88,7 +88,7 @@ export function ReportsPage() {
             onClick={() => exportMutation.mutate()}
           >
             <FileDown className="h-4 w-4" />
-            {exportMutation.isPending ? "Generatingâ€¦" : "Generate & Download"}
+            {exportMutation.isPending ? "Generating..." : "Generate & Download"}
           </button>
 
           <p className="text-center text-xs text-slate-400">

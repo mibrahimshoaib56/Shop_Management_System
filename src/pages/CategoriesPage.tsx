@@ -78,7 +78,7 @@ function CategoryModal({
           disabled={saveMutation.isPending || !form.name.trim()}
           onClick={() => saveMutation.mutate()}
         >
-          {saveMutation.isPending ? "Savingâ€¦" : "Save"}
+          {saveMutation.isPending ? "Saving..." : "Save"}
         </button>
       </div>
     </Modal>
@@ -118,7 +118,7 @@ function CategoriesTable() {
       <div className="flex items-center gap-3">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Categories</h1>
         <div className="ml-auto flex w-full max-w-xs items-center gap-2">
-          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search categoriesâ€¦" />
+          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search categories..." />
         </div>
         <button
           type="button"

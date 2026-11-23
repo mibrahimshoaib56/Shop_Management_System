@@ -1,4 +1,4 @@
-﻿import { useMutation } from "@tanstack/react-query"
+﻿﻿import { useMutation } from "@tanstack/react-query"
 import { ArrowLeft, Moon, ShieldCheck, ShoppingCart, ShoppingBag, Sun } from "lucide-react"
 import { useState } from "react"
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
@@ -30,7 +30,7 @@ export function LoginPage() {
       return response.data
     },
     onSuccess: (data) => {
-      // Portal role gate — check if the logged-in role matches selected portal
+      // Portal role gate  -  check if the logged-in role matches selected portal
       if (selectedRole === "admin" && data.user.role !== "admin") {
         setInlineError("You don\'t have admin access. Please use the Cashier portal.")
         return

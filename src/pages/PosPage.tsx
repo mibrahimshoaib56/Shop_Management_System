@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Banknote,
   BookOpen,
@@ -178,7 +178,7 @@ export function PosPage() {
     }
     const message = buildReceiptWhatsAppMessage(sale)
     openWhatsAppLink(phone.trim(), message)
-    toast.success("Opening WhatsApp with formatted receiptâ€¦")
+    toast.success("Opening WhatsApp with formatted receipt...")
   }
 
   const handleSearchKeyDown = (key: string) => {
@@ -206,7 +206,7 @@ export function PosPage() {
           <input
             type="search"
             className="input-field pl-9"
-            placeholder="Search by name or SKU â€” or scan a barcodeâ€¦"
+            placeholder="Search by name or SKU â€” or scan a barcode..."
             value={search}
             autoFocus
             onChange={(event) => setSearch(event.target.value)}
@@ -236,7 +236,7 @@ export function PosPage() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-slate-900 dark:text-white">{product.name}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {product.sku_code} Â· {product.category?.name ?? "Uncategorized"}
+                        {product.sku_code} . {product.category?.name ?? "Uncategorized"}
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
@@ -296,7 +296,7 @@ export function PosPage() {
               </option>
               {customersQuery.data?.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} {c.phone ? `(${c.phone})` : ""} Â· Bal: Rs. {Number(c.outstanding_balance).toLocaleString()}
+                  {c.name} {c.phone ? `(${c.phone})` : ""} . Bal: Rs. {Number(c.outstanding_balance).toLocaleString()}
                 </option>
               ))}
             </select>
@@ -612,7 +612,7 @@ export function PosPage() {
                     </div>
                   ) : (
                     <div className="rounded-md bg-rose-50 border border-rose-200 p-2 text-rose-700 font-semibold">
-                      âš  Please select a registered Khata Customer in the dropdown above.
+                      Warning:  Please select a registered Khata Customer in the dropdown above.
                     </div>
                   )}
                 </div>
@@ -627,7 +627,7 @@ export function PosPage() {
           disabled={items.length === 0 || checkoutMutation.isPending}
           onClick={() => checkoutMutation.mutate()}
         >
-          {checkoutMutation.isPending ? "Processingâ€¦" : "Complete Sale & Print Bill"}
+          {checkoutMutation.isPending ? "Processing..." : "Complete Sale & Print Bill"}
         </button>
         <p className="mt-2 text-center text-xs text-slate-400 dark:text-slate-500">
           Stock is verified server-side at checkout.
@@ -649,7 +649,7 @@ export function PosPage() {
                 {money(completedSale.total_revenue)}
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                {completedSale.items.length} items Â· {completedSale.customer_name || "Walk-in Customer"}
+                {completedSale.items.length} items . {completedSale.customer_name || "Walk-in Customer"}
               </p>
             </div>
 

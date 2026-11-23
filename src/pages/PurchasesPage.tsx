@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -42,7 +42,7 @@ function ProductPicker({
         <div>
           <p className="text-sm font-medium text-slate-900">{value.name}</p>
           <p className="text-xs text-slate-500">
-            {value.sku_code} · <StockBadge stock={value.current_stock} minAlert={value.min_stock_alert} />
+            {value.sku_code} . <StockBadge stock={value.current_stock} minAlert={value.min_stock_alert} />
           </p>
         </div>
         <button type="button" className="text-xs font-medium text-red-600" onClick={() => onChange(null)}>
@@ -57,7 +57,7 @@ function ProductPicker({
       <SearchInput
         value={term}
         onChange={(v) => { setTerm(v); setOpen(true) }}
-        placeholder="Search product to restock…"
+        placeholder="Search product to restock..."
         autoFocus
       />
       {open && term.trim().length >= 1 ? (
@@ -80,7 +80,7 @@ function ProductPicker({
               >
                 <p className="text-sm font-medium text-slate-900">{product.name}</p>
                 <p className="text-xs text-slate-500">
-                  {product.sku_code} · Stock {product.current_stock}
+                  {product.sku_code} . Stock {product.current_stock}
                 </p>
               </button>
             ))
@@ -115,7 +115,7 @@ function RestockForm() {
         invoice_number: invoiceNumber.trim(),
       }),
     onSuccess: () => {
-      toast.success("Purchase recorded — stock updated.")
+      toast.success("Purchase recorded  -  stock updated.")
       void queryClient.invalidateQueries({ queryKey: ["purchases"] })
       void queryClient.invalidateQueries({ queryKey: ["products"] })
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] })
@@ -145,7 +145,7 @@ function RestockForm() {
 
       <FormField label="Supplier">
         <select className="input-field" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
-          <option value="">Select supplier…</option>
+          <option value="">Select supplier...</option>
           {suppliersQuery.data?.items.map((s) => (
             <option key={s.id} value={s.id}>{s.name}</option>
           ))}
@@ -174,7 +174,7 @@ function RestockForm() {
           <span className="font-semibold text-slate-900">
             {money(Number(unitPrice || 0) * Number(quantity || 0))}
           </span>{" "}
-          · New stock will be{" "}
+          . New stock will be{" "}
           <span className="font-semibold text-slate-900">
             {product.current_stock + Number(quantity || 0)}
           </span>
@@ -188,7 +188,7 @@ function RestockForm() {
         onClick={submit}
       >
         <Plus className="h-4 w-4" />
-        {createMutation.isPending ? "Saving…" : "Add Purchase & Increment Stock"}
+        {createMutation.isPending ? "Saving..." : "Add Purchase & Increment Stock"}
       </button>
     </div>
   )

@@ -21,7 +21,7 @@ export function buildReceiptWhatsAppMessage(
 ): string {
   const lines = (sale.items || []).map(
     (item) =>
-      `â€¢ ${item.product_name || "Item"} (x${item.quantity}) - Rs. ${Number(item.line_revenue).toLocaleString()}`
+      `* ${item.product_name || "Item"} (x${item.quantity}) - Rs. ${Number(item.line_revenue).toLocaleString()}`
   )
 
   const portalUrl = `${window.location.origin}/catalog`
@@ -35,7 +35,7 @@ export function buildReceiptWhatsAppMessage(
     (sale.payment_method ? `Payment: *${sale.payment_method}*${sale.payment_split ? ` (${sale.payment_split})` : ""}\n` : "") +
     `============================\n` +
     `*Items Purchased:*\n` +
-    (lines.length > 0 ? lines.join("\n") : "â€¢ General Items") +
+    (lines.length > 0 ? lines.join("\n") : "* General Items") +
     `\n============================\n` +
     (sale.discount_amount && Number(sale.discount_amount) > 0
       ? `Discount: -Rs. ${Number(sale.discount_amount).toLocaleString()}\n`
@@ -76,10 +76,10 @@ export function buildSupplierReorderMessage(
     `Hello ${supplierName || "Supplier"},\n\n` +
     `This is an automated restock order request from *${storeName}*.\n\n` +
     `We are running low on the following product:\n` +
-    `â€¢ *Product:* ${product.name}\n` +
-    `â€¢ *SKU:* ${product.sku_code}\n` +
-    `â€¢ *Current Stock:* ${product.current_stock} units\n` +
-    `â€¢ *Alert Level:* ${product.min_stock_alert} units\n\n` +
+    `* *Product:* ${product.name}\n` +
+    `* *SKU:* ${product.sku_code}\n` +
+    `* *Current Stock:* ${product.current_stock} units\n` +
+    `* *Alert Level:* ${product.min_stock_alert} units\n\n` +
     `Please share availability, unit wholesale price, and expected delivery time.\n\n` +
     `Thank you!`
   )

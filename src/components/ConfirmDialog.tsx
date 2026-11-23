@@ -1,4 +1,4 @@
-import { Modal } from "@/components/Modal"
+﻿import { Modal } from "@/components/Modal"
 
 interface ConfirmDialogProps {
   open: boolean
@@ -34,7 +34,7 @@ export function ConfirmDialog({
           onClick={onConfirm}
           disabled={busy}
         >
-          {busy ? "Working…" : confirmLabel}
+          {busy ? "Working..." : confirmLabel}
         </button>
       </div>
     </Modal>

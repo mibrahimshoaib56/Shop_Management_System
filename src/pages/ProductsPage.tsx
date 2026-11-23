@@ -155,7 +155,7 @@ function ProductFormModal({
         </FormField>
         <FormField label="Category">
           <select className="input-field" value={form.category_id} onChange={(e) => set("category_id")(e.target.value)}>
-            <option value="">Selectâ€¦</option>
+            <option value="">Select...</option>
             {categoriesQuery.data?.items.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -183,7 +183,7 @@ function ProductFormModal({
         </FormField>
         <div className="sm:col-span-2">
           <FormField label="Image URL" hint="Paste an http(s) link to a product photo.">
-            <input className="input-field" placeholder="https://â€¦" value={form.image_url} onChange={(e) => set("image_url")(e.target.value)} />
+            <input className="input-field" placeholder="https://..." value={form.image_url} onChange={(e) => set("image_url")(e.target.value)} />
           </FormField>
         </div>
         <div className="sm:col-span-2">
@@ -197,7 +197,7 @@ function ProductFormModal({
       <div className="mt-5 flex justify-end gap-2 border-t border-slate-200 pt-4">
         <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
         <button type="button" className="btn-primary" onClick={submit} disabled={saveMutation.isPending}>
-          {saveMutation.isPending ? "Savingâ€¦" : editing ? "Save Changes" : "Create Product"}
+          {saveMutation.isPending ? "Saving..." : editing ? "Save Changes" : "Create Product"}
         </button>
       </div>
     </Modal>
@@ -302,7 +302,7 @@ function AdjustStockModal({
           <label className="mb-1 block font-semibold text-slate-700">Audit Notes (Optional)</label>
           <input
             className="input-field"
-            placeholder="e.g. Broken in transit, expired batch #492â€¦"
+            placeholder="e.g. Broken in transit, expired batch #492..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
@@ -329,7 +329,7 @@ function AdjustStockModal({
             onClick={() => adjustMutation.mutate()}
           >
             <AlertOctagon className="h-4 w-4" />
-            <span>{adjustMutation.isPending ? "Adjustingâ€¦" : "Confirm Write Off"}</span>
+            <span>{adjustMutation.isPending ? "Adjusting..." : "Confirm Write Off"}</span>
           </button>
         </div>
       </div>
@@ -515,7 +515,7 @@ function ProductsTable() {
     <div className="space-y-4">
       <div className="card flex flex-wrap items-center gap-3 p-3">
         <div className="min-w-[220px] flex-1">
-          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search by name or SKUâ€¦" />
+          <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1) }} placeholder="Search by name or SKU..." />
         </div>
         <select className="input-field w-44" value={categoryId} onChange={(e) => { setCategoryId(e.target.value); setPage(1) }}>
           <option value="">All categories</option>

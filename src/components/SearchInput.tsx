@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+﻿import { useEffect, useRef, useState } from "react"
 import { Search } from "lucide-react"
 
 interface SearchInputProps {
@@ -8,7 +8,7 @@ interface SearchInputProps {
   autoFocus?: boolean
 }
 
-export function SearchInput({ value, onChange, placeholder = "Search…", autoFocus }: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder = "Search...", autoFocus }: SearchInputProps) {
   const [local, setLocal] = useState(value)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 

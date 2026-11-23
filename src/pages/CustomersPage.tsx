@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   AlertCircle,
   BookOpen,
@@ -255,7 +255,7 @@ export function CustomersPage() {
           <input
             type="search"
             className="input-field pl-9"
-            placeholder="Search by customer name or mobile numberâ€¦"
+            placeholder="Search by customer name or mobile number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -515,7 +515,7 @@ export function CustomersPage() {
                 disabled={saveCustomerMutation.isPending}
                 className="btn-primary text-xs"
               >
-                {saveCustomerMutation.isPending ? "Savingâ€¦" : editingCustomer ? "Update Customer" : "Create Customer"}
+                {saveCustomerMutation.isPending ? "Saving..." : editingCustomer ? "Update Customer" : "Create Customer"}
               </button>
             </div>
           </form>
@@ -597,7 +597,7 @@ export function CustomersPage() {
                 onClick={() => recordPaymentMutation.mutate()}
                 className="btn-primary text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {recordPaymentMutation.isPending ? "Recordingâ€¦" : "Save Payment (+ Cash In)"}
+                {recordPaymentMutation.isPending ? "Recording..." : "Save Payment (+ Cash In)"}
               </button>
             </div>
           </div>
@@ -680,7 +680,7 @@ function LedgerModal({
         {/* Quick Action buttons */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div className="text-xs text-slate-500">
-            {customer.phone && <span className="font-mono">{customer.phone} Â· </span>}
+            {customer.phone && <span className="font-mono">{customer.phone} . </span>}
             {customer.address || "No address specified"}
           </div>
           <div className="flex items-center gap-2">

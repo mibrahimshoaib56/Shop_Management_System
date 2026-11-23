@@ -69,7 +69,7 @@ export function DashboardPage() {
     queryFn: async () => (await api.get<KhataSummary>("/customers/summary")).data,
   })
 
-  if (statsQuery.isLoading) return <Spinner label="Loading dashboardâ€¦" />
+  if (statsQuery.isLoading) return <Spinner label="Loading dashboard..." />
   if (statsQuery.isError || !statsQuery.data) {
     return <ErrorPanel onRetry={() => statsQuery.refetch()} />
   }

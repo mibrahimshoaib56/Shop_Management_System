@@ -1,4 +1,4 @@
-﻿import { ArrowRight, Moon, ShoppingBag, Store, Sun, Zap } from "lucide-react"
+﻿﻿import { ArrowRight, Moon, ShoppingBag, Store, Sun, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { useAuthStore } from "@/stores/authStore"
@@ -109,7 +109,7 @@ export function LandingPage() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-zinc-900 py-4 text-center text-xs text-slate-600">
-        © {new Date().getFullYear()} MIGOS ENTERPRISE — All rights reserved
+        © {new Date().getFullYear()} MIGOS ENTERPRISE  -  All rights reserved
       </footer>
     </div>
   )

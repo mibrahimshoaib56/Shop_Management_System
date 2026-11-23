@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+﻿﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CheckCircle2, Printer, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -130,7 +130,7 @@ function RefundModal({
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span className="font-semibold text-slate-900">{sale.customer_name || "Walk-in Customer"}</span> Â·{" "}
+              <span className="font-semibold text-slate-900">{sale.customer_name || "Walk-in Customer"}</span> .{" "}
               <span>Original Total: {money(sale.total_revenue)}</span>
             </div>
             <span className="font-medium text-slate-500">Method: {sale.payment_method || "Cash"}</span>
@@ -236,7 +236,7 @@ function RefundModal({
           </div>
           <input
             className="input-field text-xs"
-            placeholder="Or type custom return notes/reasonâ€¦"
+            placeholder="Or type custom return notes/reason..."
             value={reason}
             onChange={(e) => setReason(e.target.value)}
           />
@@ -258,7 +258,7 @@ function RefundModal({
               onClick={() => refundMutation.mutate()}
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              <span>{refundMutation.isPending ? "Processingâ€¦" : "Confirm Refund & Restore Stock"}</span>
+              <span>{refundMutation.isPending ? "Processing..." : "Confirm Refund & Restore Stock"}</span>
             </button>
           </div>
         </div>
@@ -483,7 +483,7 @@ export function SalesPage() {
               setQ(v)
               setPage(1)
             }}
-            placeholder="Search by transaction code or customerâ€¦"
+            placeholder="Search by transaction code or customer..."
           />
         </div>
         <input
