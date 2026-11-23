@@ -486,6 +486,16 @@ function ProductsTable() {
     },
   })
 
+  const unarchiveMutation = useMutation({
+    mutationFn: async (product: Product) =>
+      await api.put(`/products/${product.id}`, { is_archived: false }),
+    onSuccess: () => {
+      toast.success("Product restored successfully.")
+      void queryClient.invalidateQueries({ queryKey: ["products"] })
+      void queryClient.invalidateQueries({ queryKey: ["pos-search"] })
+    },
+  })
+
   const deleteMutation = useMutation({
     mutationFn: async (productId: number) => await api.delete(`/products/${productId}`),
     onSuccess: () => {
@@ -630,7 +640,17 @@ function ProductsTable() {
                           >
                             <Archive className="h-4 w-4" />
                           </button>
-                        ) : null}
+                        ) : (
+                          <button
+                            type="button"
+                            className="rounded-md p-1.5 text-emerald-600 hover:bg-emerald-50"
+                            onClick={() => unarchiveMutation.mutate(product)}
+                            disabled={unarchiveMutation.isPending}
+                            title="Unarchive / Restore"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </button>
+                        )}
                         {!product.is_archived ? (
                           <button
                             type="button"
@@ -746,4 +766,5 @@ function ProductsTable() {
 export function ProductsPage() {
   return <ProductsTable />
 }
+
 
